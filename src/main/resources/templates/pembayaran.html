@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaft.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaksi Cicilan Tetap</title>
+    <link rel="shortcut icon" href="https://cdn-icons-png.flaticon.com/512/622/622848.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css" rel="stylesheet"
+        crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa"
+        crossorigin="anonymous"></script>
+
+    <!-- Include Required Prerequisites -->
+    <script type="text/javascript" src="//cdn.jsdelivr.net/jquery/1/jquery.min.js"></script>
+    <script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+
+    <!-- Datatable -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css" />
+    <script type="text/javascript" src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+
+    <style>
+        #ip {
+            display: flex;
+            margin-top: 20px;
+        }
+
+        .dataTables_paginate {
+            float: unset;
+        }
+
+        #info {
+            margin-left: auto;
+            padding: 10px;
+            padding-top: 13px;
+            min-height: 46px;
+        }
+
+        input:read-only,
+        textarea:read-only {
+            background-color: #eee;
+        }
+
+        .dataList {
+            width: 100%;
+            border: none;
+            background-color: #fff;
+            text-align: left;
+        }
+
+        .dataList:focus,
+        .dataListOn {
+            background-color: #eee;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    </nav>
+
+    <div class="container-fluid mt-3">
+        <div class="row" id="add-form" style="display: none;">
+            <div class="col-12">
+                <h2 class="mb-4">Transaksi Cicilan Tetap - Pembayaran Cicilan</h2>
+                <div class="col-12">
+                    <div class="alert alert-dismissible fade d-none px-3 py-1 mb-0 mb-3" role="alert" id="alert">
+                        <strong id="message"></strong>
+                        <button type="button" class="btn-close p-2" onclick="return closeAlert()"></button>
+                    </div>
+                </div>
+                <div class="card col-12 mt-3">
+                    <div class="card-body p-4">
+                        <div class="row">
+                            <label class="col-12 mb-3"><b>Informasi Transaksi</b></label>
+                            <div class="col-lg-6">
+                                <div class="row">
+                                    <div class="col-4">
+                                        <label>Nomor Pembayaran</label>
+                                    </div>
+                                    <div class="col-8 mb-2">
+                                        <input type="text" name="nomorPembayaran" class="form-control" readonly>
+                                    </div>
+                                    <div class="col-4">
+                                        <label>Pelanggan <span class="text-danger">*</span></label>
+                                    </div>
+                                    <div class="col-8 mb-2">
+                                        <input type="text" name="pelanggan" class="form-control" readonly>
+                                    </div>
+                                    <div class="col-4">
+                                        <label>Tgl Transaksi</label>
+                                    </div>
+                                    <div class="col-8 mb-2">
+                                        <input type="date" name="tglTransaksi" class="form-control" readonly>
+                                    </div>
+                                    <div class="col-4">
+                                        <label>Nomor Transaksi</label>
+                                    </div>
+                                    <div class="col-8 mb-2">
+                                        <input type="text" name="nomorTransaksi" class="form-control" readonly>
+                                    </div>
+                                    <div class="col-4">
+                                        <label>Total Nilai Pinjaman</label>
+                                    </div>
+                                    <div class="col-8 mb-2">
+                                        <input type="text" name="totalNilaiPinjaman" class="form-control" readonly>
+                                    </div>
+                                    <div class="col-4">
+                                        <label>Tenor (bulan)</label>
+                                    </div>
+                                    <div class="col-8 mb-2">
+                                        <input type="text" name="tenor" class="form-control" readonly>
+                                    </div>
+                                    <div class="col-4">
+                                        <label>Tanggal Jatuh Tempo</label>
+                                    </div>
+                                    <div class="col-8 mb-2">
+                                        <input type="date" name="tanggalJatuhTempo" class="form-control" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="row">
+                                    <div class="col-4 pe-0">
+                                        <label>Produk Transaksi <span class="text-danger">*</span></label>
+                                    </div>
+                                    <div class="col-8 mb-2">
+                                        <input type="text" name="produkTransaksi" class="form-control" readonly>
+                                    </div>
+                                    <div class="col-4">
+                                        <label>Nama Produk</label>
+                                    </div>
+                                    <div class="col-8 mb-2">
+                                        <input type="text" name="namaProduk" class="form-control" readonly>
+                                    </div>
+                                    <div class="col-4">
+                                        <label>Keterangan Produk</label>
+                                    </div>
+                                    <div class="col-8 mb-2">
+                                        <textarea class="form-control" name="keteranganProduk" style="resize: none;"
+                                            maxlength="255" readonly></textarea>
+                                    </div>
+                                    <div class="col-4 pe-0">
+                                        <label>Total Kewajiban</label>
+                                    </div>
+                                    <div class="col-8 mb-2">
+                                        <input type="text" name="totalKewajiban" class="form-control" readonly>
+                                    </div>
+                                    <div class="col-4 pe-0">
+                                        <label>Total Denda</label>
+                                    </div>
+                                    <div class="col-8 mb-2">
+                                        <input type="text" name="totalDenda" class="form-control" readonly>
+                                    </div>
+                                    <div class="col-4 pe-0">
+                                        <label>Total Pembayaran</label>
+                                    </div>
+                                    <div class="col-8 mb-2">
+                                        <input type="text" name="totalPembayaran" class="form-control" readonly>
+                                    </div>
+                                    <div class="col-4 pe-0">
+                                        <label>Sisa Kewajiban</label>
+                                    </div>
+                                    <div class="col-8 mb-2">
+                                        <input type="text" name="sisaKewajiban" class="form-control" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 pt-4">
+                                <button type="button" class="btn btn-secondary btn-kembali me-3 px-5"
+                                    id="btnDetail">Detail Transaksi</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card col-12 mt-3">
+                    <div class="card-body p-4">
+                        <label class="col-12 mb-3"><b>Data Tagihan Cicilan dan Pembayaran Pelanggan</b></label>
+                        <small class="text-danger" id="info-dataCicilanPembayran"></small>
+                        <table class="table table-striped table-bordered">
+                            <thead>
+                                <tr class="bg-primary text-white">
+                                    <th class="text-center">No Transaksi</th>
+                                    <th class="text-center">Cicilan Ke</th>
+                                    <th class="text-center">Pokok</th>
+                                    <th class="text-center">B. Jasa Penyimpanan</th>
+                                    <th class="text-center">Denda Keterlambatan</th>
+                                    <th class="text-center">Total Tagihan</th>
+                                    <th class="text-center">Status Cicilan</th>
+                                    <th class="text-center">Tanggal Akif Cicilan</th>
+                                    <th class="text-center">Tanggal Bayar</th>
+                                    <th class="text-center">Bayar</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dataCicilanPembayran">
+
+                            </tbody>
+                        </table>
+                        <div class="col-lg-6 ms-auto mt-5">
+                            <div class="row">
+                                <div class="col-5">
+                                    <label>Total Pembayaran Cicilan</label>
+                                </div>
+                                <div class="col-7 mb-2">
+                                    <input type="text" name="totalPembayaranCicilan" class="form-control text-end"
+                                        readonly>
+                                </div>
+                                <div class="col-5">
+                                    <label>Total Pembayaran Denda</label>
+                                </div>
+                                <div class="col-7 mb-2">
+                                    <input type="text" name="totalPembayaranDenda" class="form-control text-end"
+                                        readonly>
+                                </div>
+                                <div class="col-5">
+                                    <label>Biaya Admin Tutup</label>
+                                </div>
+                                <div class="col-7 mb-2">
+                                    <input type="text" name="biayaAdminTutup" class="form-control text-end" readonly>
+                                </div>
+                                <div class="col-5">
+                                    <label>Diskon</label>
+                                </div>
+                                <div class="col-7 mb-2">
+                                    <input type="text" name="diskon" class="form-control text-end"
+                                        onkeyup="return formatDiskon()">
+                                </div>
+                                <div class="col-5">
+                                    <label>Total Tagihan</label>
+                                </div>
+                                <div class="col-7 mb-2">
+                                    <input type="text" name="totalTagihan" class="form-control text-end" readonly>
+                                </div>
+                                <div class="col-5">
+                                    <label>Pembulatan</label>
+                                </div>
+                                <div class="col-7 mb-2">
+                                    <input type="text" name="pembulatan" class="form-control text-end" readonly>
+                                </div>
+                                <div class="col-5">
+                                    <label>Total Tagihan Setelah Pembulatan</label>
+                                </div>
+                                <div class="col-7 mb-2">
+                                    <input type="text" name="totalTagihanSetelahPembulatan"
+                                        class="form-control text-end" readonly>
+                                </div>
+                                <div class="col-5">
+                                    <label>Jumlah Pembayaran Pelanggan</label>
+                                </div>
+                                <div class="col-7 mb-2">
+                                    <input type="text" name="jumlahPembayaranPelanggan" class="form-control text-end"
+                                        onkeyup="return formatJumlahPembayaranPelanggan()">
+                                    <small class="text-danger" id="info-jumlahPembayaranPelanggan"></small>
+                                </div>
+                                <div class="col-5">
+                                    <label>Kembalian</label>
+                                </div>
+                                <div class="col-7 mb-2">
+                                    <input type="text" name="kembalian" class="form-control text-end" readonly>
+                                </div>
+                                <div class="col-5">
+                                    <label>Metode Pembayaran</label>
+                                </div>
+                                <div class="col-7 mb-2">
+                                    <select class="form-control" name="metodePembayaran">
+                                        <option value=""></option>
+                                        <option value="CASH">CASH</option>
+                                        <option value="TRANSFER">TRANSFER</option>
+                                        <option value="DEBIT">DEBIT</option>
+                                        <option value="KREDIT">KREDIT</option>
+                                    </select>
+                                    <small class="text-danger" id="info-metodePembayaran"></small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 text-end pt-4">
+                            <button type="button" class="btn btn-secondary btn-kembali me-3 px-5"
+                                onclick="return btnKembali()">Kembali</button>
+                            <button type="button" class="btn btn-success text-white me-3 px-5" id="btnHitung">Hitung
+                                Tagihan & Pembayaran</button>
+                            <button type="button" class="btn btn-primary px-5" id="simpan"
+                                onclick="return addAction()">Simpan</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="row" id="detail-form" style="display: none;">
+            <div class="col-12">
+                <h2 class="mb-4">Transaksi Cicilan Tetap - Detail Transaksi</h2>
+                <div class="col-12">
+                    <div class="alert alert-dismissible fade d-none px-3 py-1 mb-0 mb-3" role="alert" id="alert">
+                        <strong id="message"></strong>
+                        <button type="button" class="btn-close p-2" onclick="return closeAlert()"></button>
+                    </div>
+                </div>
+                <div class="card col-12 mt-3">
+                    <div class="card-body p-4">
+                        <div class="row">
+                            <label class="col-12 mb-3"><b>Informasi Transaksi</b></label>
+                            <div class="col-lg-6">
+                                <div class="row">
+                                    <div class="col-3">
+                                        <label>Pelanggan <span class="text-danger">*</span></label>
+                                    </div>
+                                    <div class="col-8 mb-2">
+                                        <input type="text" name="detailIdPelanggan" class="form-control" readonly>
+                                        <small class="text-danger" id="info-idPelanggan"></small>
+                                    </div>
+                                    <div class="col-3">
+                                        <label>Tgl Transaksi</label>
+                                    </div>
+                                    <div class="col-8 mb-2">
+                                        <input type="date" name="detailTglTransaksi" class="form-control" readonly>
+                                    </div>
+                                    <div class="col-3">
+                                        <label>Nomor Transaksi</label>
+                                    </div>
+                                    <div class="col-8 mb-2">
+                                        <input type="text" name="detailNomorTransaksi" class="form-control" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="row">
+                                    <div class="col-3 pe-0">
+                                        <label>Produk Transaksi <span class="text-danger">*</span></label>
+                                    </div>
+                                    <div class="col-8 mb-2">
+                                        <input type="text" name="detailProdukTransaksi" class="form-control" readonly>
+                                    </div>
+                                    <div class="col-3">
+                                        <label>Nama Produk</label>
+                                    </div>
+                                    <div class="col-8 mb-2">
+                                        <input type="text" name="detailNamaProdukTransaksi" class="form-control"
+                                            readonly>
+                                    </div>
+                                    <div class="col-3">
+                                        <label>Keterangan Produk</label>
+                                    </div>
+                                    <div class="col-8 mb-2">
+                                        <textarea class="form-control" name="detailKeteranganProdukTransaksi"
+                                            style="resize: none;" maxlength="255" readonly></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card col-12 mt-3">
+                    <div class="card-body p-4">
+                        <div class="row mb-5 ">
+                            <label class="col-12 mb-3"><b>Daftar Barang Gadai <span
+                                        class="text-danger">*</span></b></label>
+                        </div>
+                        <small class="text-danger" id="info-daftarBarangGadai"></small>
+                        <table class="table table-striped table-bordered">
+                            <thead>
+                                <tr class="bg-primary text-white">
+                                    <th class="text-center">No</th>
+                                    <th class="text-center">Nama Barang</th>
+                                    <th class="text-center">Kondisi</th>
+                                    <th class="text-center">Jlh Barang</th>
+                                    <th class="text-center">Harga Per satuan</th>
+                                    <th class="text-center">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody id="detailDataBarangGadai">
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card col-12 mt-3">
+                    <div class="card-body p-4">
+                        <div class="row">
+                            <label class="col-12 mb-3"><b>Data Kontrak</b></label>
+                            <div class="col-lg-6">
+                                <div class="row">
+                                    <div class="col-5 pe-0">
+                                        <label>Total Nilai Taksiran</label>
+                                    </div>
+                                    <div class="col-7 mb-2">
+                                        <input type="text" name="detailTotalNilaiTaksiran" class="form-control text-end"
+                                            readonly>
+                                    </div>
+                                    <div class="col-5 pe-0">
+                                        <label>LTV %</label>
+                                    </div>
+                                    <div class="col-3 mb-2">
+                                        <input type="text" name="detailLtv" class="form-control text-end" readonly>
+                                    </div>
+                                    <div class="col-4"></div>
+                                    <div class="col-5 pe-0">
+                                        <label>Maksimal Nilai Pinjaman</label>
+                                    </div>
+                                    <div class="col-7 mb-2">
+                                        <input type="text" name="detailMaksimalNilaiPinjaman"
+                                            class="form-control text-end" readonly>
+                                    </div>
+                                    <div class="col-5 pe-0">
+                                        <label>Nilai Pencairan Pelanggan <span class="text-danger">*</span></label>
+                                    </div>
+                                    <div class="col-7 mb-2">
+                                        <input type="text" name="detailNilaiPencairanPelanggan"
+                                            class="form-control text-end"
+                                            onkeyup="return FormatNilaiPencairanPelanggan()" readonly>
+                                    </div>
+                                    <div class="col-5 pe-0">
+                                        <label>Biaya Admin Buka</label>
+                                    </div>
+                                    <div class="col-7 mb-2">
+                                        <input type="text" name="detailBiayaAdminBuka" class="form-control text-end"
+                                            readonly>
+                                    </div>
+                                    <div class="col-5 pe-0">
+                                        <label>Diskon Adm. Buka <span class="text-danger">*</span></label>
+                                    </div>
+                                    <div class="row col-7 mb-2">
+                                        <div class="col-5">
+                                            <input type="text" name="detailDiskonAdmBuka" class="form-control text-end"
+                                                onkeyup="return FormatDiskonAdmBuka()" maxlength="6" readonly>
+                                        </div>
+                                        <div class="col-7 ps-0">%</div><br>
+                                    </div>
+                                    <div class="col-5 pe-0">
+                                        <label>Biaya Admin Buka Akhir</label>
+                                    </div>
+                                    <div class="col-7 mb-2">
+                                        <input type="text" name="detailBiayaAdminBukaAkhir"
+                                            class="form-control text-end" readonly>
+                                    </div>
+                                    <div class="col-5 pe-0">
+                                        <label>Total Nilai Pinjaman</label>
+                                    </div>
+                                    <div class="col-7 mb-2">
+                                        <input type="text" name="detailTotalNilaiPinjaman" class="form-control text-end"
+                                            readonly>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="row">
+                                    <div class="col-3 pe-0">
+                                        <label>Tanggal Transaksi</label>
+                                    </div>
+                                    <div class="col-9 mb-2">
+                                        <input type="date" name="detailTanggalTransaksi" class="form-control" readonly>
+                                    </div>
+                                    <div class="col-3 pe-0">
+                                        <label>Tgl Jatuh Tempo</label>
+                                    </div>
+                                    <div class="col-9 mb-2">
+                                        <input type="date" name="detailTglJatuhTempo" class="form-control" readonly>
+                                    </div>
+                                    <div class="col-6 pe-0">
+                                        <label>Biaya Jasa Penyimpanan</label>
+                                    </div>
+                                    <div class="col-2 ps-0 mb-2">
+                                        <input type="text" class="form-control text-end" name="detailJasaPenyimpanan"
+                                            readonly>
+                                    </div>
+                                    <label class="col-1 form-label px-0">% <span
+                                            class="float-end text-end">Per</span></label>
+                                    <div class="col-2">
+                                        <input type="text" class="form-control text-end"
+                                            name="detailJasaPenyimpananPeriode" readonly>
+                                    </div>
+                                    <label class="col-1 form-label px-0 end-jasaPenyimpanan">bulan</label>
+                                    <div class="col-6 pe-0">
+                                        <label>Biaya Jasa Penyimpanan / Periode</label>
+                                    </div>
+                                    <div class="col-6 mb-2 ps-0">
+                                        <input type="text" name="detailBiayaJasaPenyimpananPerPeriode"
+                                            class="form-control text-end" readonly>
+                                    </div>
+                                    <div class="col-6 pe-0">
+                                        <label>Total Biaya Jasa Penyimpanan</label>
+                                    </div>
+                                    <div class="col-6 mb-2 ps-0">
+                                        <input type="text" name="detailTotalBiayaJasaPenyimpanan"
+                                            class="form-control text-end" readonly>
+                                    </div>
+                                    <div class="col-6 pe-0">
+                                        <label>Biaya Admin Tutup</label>
+                                    </div>
+                                    <div class="col-6 mb-2 ps-0">
+                                        <input type="text" name="detailBiayaAdminTutup" class="form-control text-end"
+                                            readonly>
+                                    </div>
+                                    <div class="col-6 pe-0">
+                                        <label>Total Pengembalian</label>
+                                    </div>
+                                    <div class="col-6 mb-2 ps-0">
+                                        <input type="text" name="detailTotalPengembalian" class="form-control text-end"
+                                            readonly>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card col-12 mt-3">
+                    <div class="card-body p-4">
+                        <div class="row mb-5 ">
+                            <label class="col-12 mb-3"><b>Data Tagihan Cicilan dan Pembayaran Pelanggan</b></label>
+                        </div>
+                        <small class="text-danger" id="info-daftarBarangGadai"></small>
+                        <table class="table table-striped table-bordered">
+                            <thead>
+                                <tr class="bg-primary text-white">
+                                    <th class="text-center">No Transaksi</th>
+                                    <th class="text-center">Cicilan Ke</th>
+                                    <th class="text-center">Pokok</th>
+                                    <th class="text-center">B. Jasa Penyimpanan</th>
+                                    <th class="text-center">Denda Keterlambatan</th>
+                                    <th class="text-center">Total Tagihan</th>
+                                    <th class="text-center">Status Cicilan</th>
+                                    <th class="text-center">Tanggal Akif Cicilan</th>
+                                    <th class="text-center">Tanggal Bayar</th>
+                                </tr>
+                            </thead>
+                            <tbody id="detailDataCicilan">
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-12 text-end py-4">
+                    <button type="button" class="btn btn-secondary btn-kembali me-3 px-5"
+                        onclick="return btnKembali2()">Kembali</button>
+                </div>
+            </div>
+        </div>
+        <div class="row" id="main-form">
+            <div class="col-12">
+                <h2 class="mb-4">Pembayaran Cicilan Tetap</h2>
+                <div class="card col-12">
+                    <div class="card-header">
+                        <div class="float-start p-2">
+                            <b>Cari Data Transaksi</b>
+                        </div>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-lg-3 text-end mb-2">
+                                    <label class="py-2">No Transaksi</label>
+                                </div>
+                                <div class="col-lg-6 mb-2">
+                                    <input type="text" name="searchNoTransaksi" class="form-control">
+                                </div>
+                                <div class="col-lg-3">
+                                </div>
+                                <div class="col-lg-3 text-end mb-2">
+                                    <label class="py-2">Id Pelanggan</label>
+                                </div>
+                                <div class="col-lg-7 mb-2">
+                                    <input type="text" name="searchIdPelanggan" class="form-control">
+                                </div>
+
+                                <div class="col-lg-3 text-end mb-2">
+                                    <label class="py-2">Nama Pelanggan</label>
+                                </div>
+                                <div class="col-lg-7 mb-2">
+                                    <input type="text" name="searchNamaPelanggan" class="form-control">
+                                </div>
+
+                                <div class="col-lg-3 text-end mb-2">
+                                    <label class="py-2">Tanggal Cicilan</label>
+                                </div>
+                                <div class="col-lg-4 mb-2">
+                                    <input type="date" name="searchTanggalTransaksi" class="form-control"
+                                        th:value="${#calendars.format(#calendars.createNow(), 'yyyy-MM-dd')}">
+                                </div>
+                                <div class="col-lg-1 mb-2 text-center">
+                                    <label class="py-2">s/d</label>
+                                </div>
+                                <div class="col-lg-4 mb-2">
+                                    <input type="date" name="searchTanggalTransaksiSampai" class="form-control"
+                                        th:value="${#calendars.format(#calendars.createNow(), 'yyyy-MM-dd')}">
+                                </div>
+
+                                <div class="ms-auto col-lg-10 pt-2">
+                                    <button class="btn btn-primary me-3" onclick="return searchAction()">
+                                        Cari
+                                    </button>
+                                    <button class="btn btn-primary mx-3" onclick="return emptyAction()">
+                                        Kosongkan
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr />
+                <div class="table-responsive">
+                    <table class="table table-striped w-100" id="data-trans">
+                        <thead>
+                            <tr class="bg-primary text-white">
+                                <th class="text-center">NoTrans</th>
+                                <th class="text-center">TglTrans</th>
+                                <th class="text-center">Id Pelanggan</th>
+                                <th class="text-center">no KTP</th>
+                                <th class="text-center">Nama Pelanggan</th>
+                                <th class="text-center">Cicilan Ke</th>
+                                <th class="text-center">Total Tagihan</th>
+                                <th class="text-center">Status Cicilan</th>
+                                <th class="text-center">Tgl Aktif Cicilan</th>
+                                <th class="text-center">Tgl Jatuh Tempo Cicilan</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript">
+    var url = "doGetAllPembayaranTransaksi";
+    var dataSearch = "";
+    var dataBarangGadai = [];
+    var maksimalNilaiPinjamanPelanggan = 0;
+    $('nav').load('/fragments/nav');
+    view(url, dataSearch);
+
+    function closeAlert() {
+        $('#alert').addClass('d-none');
+    }
+    function btnKembali() {
+        view(url, dataSearch);
+        $('#add-form').hide();
+        $('#main-form').show();
+        $('#detail-form').hide();
+        window.location.hash = '#';
+        window.location.hash = '#main-form';
+    }
+    function btnKembali2() {
+        view(url, dataSearch);
+        $('#add-form').show();
+        $('#main-form').hide();
+        $('#detail-form').hide();
+        window.location.hash = '#';
+        window.location.hash = '#add-form';
+    }
+
+    function hitung(id) {
+        var checkBayar = [];
+        $('[name="checkBayar"]:checked').each(function (i) {
+            checkBayar[i] = $(this).val();
+        });
+        var diskon = $('[name="diskon"]').val();
+        var jumlahPembayaranPelanggan = $('[name="jumlahPembayaranPelanggan"]').val();
+        var data = {
+            id: id, checkBayar: checkBayar, diskon: diskon
+        }
+        jumlahPembayaranPelanggan = replaces(jumlahPembayaranPelanggan);
+        if (checkBayar.length == 0) {
+            $('#info-dataCicilanPembayran').html('* Harus dipilih dulu');
+            return;
+        }
+
+        $.ajax({
+            type: "POST",
+            data: JSON.stringify(data),
+            contentType: 'application/json',
+            dataType: 'json',
+            url: "doHitungTagihan",
+            success: function (response) {
+                $('[name="totalPembayaranCicilan"]').val(response.data.totalPembayaranCicilan.toLocaleString("pt-BR", { maximumFractionDigits: 2 }));
+                $('[name="totalPembayaranDenda"]').val(response.data.totalPembayaranDenda.toLocaleString("pt-BR", { maximumFractionDigits: 2 }));
+                $('[name="biayaAdminTutup"]').val(response.data.biayaAdminTutup.toLocaleString("pt-BR", { maximumFractionDigits: 2 }));
+                $('[name="totalTagihan"]').val(response.data.totalTagihan.toLocaleString("pt-BR", { maximumFractionDigits: 2 }));
+                $('[name="pembulatan"]').val(response.data.pembulatan.toLocaleString("pt-BR", { maximumFractionDigits: 2 }));
+                $('[name="diskon"]').val(response.data.diskon.toLocaleString("pt-BR", { maximumFractionDigits: 2 }));
+                $('[name="totalTagihanSetelahPembulatan"]').val(response.data.totalTagihanSetelahPembulatan.toLocaleString("pt-BR", { maximumFractionDigits: 2 }));
+                $('[name="kembalian"]').val((jumlahPembayaranPelanggan - response.data.totalTagihanSetelahPembulatan).toLocaleString("pt-BR", { maximumFractionDigits: 2 }));
+            },
+            error: function (xhr, status, error) {
+                var obj = JSON.parse(xhr.responseText);
+                alertInfo(obj);
+            }
+        })
+    }
+    function clearForm() {
+        $('[name="nomorPembayaran"]').val("");
+        $('[name="jumlahPembayaranPelanggan"]').val("");
+        $('[name="diskon"]').val("");
+        $('[name="metodePembayaran"]').val("");
+        $('[name="checkBayar"]').prop('checked', false);
+        $('[name="totalPembayaranCicilan"]').val("");
+        $('[name="totalPembayaranDenda"]').val("");
+        $('[name="biayaAdminTutup"]').val("");
+        $('[name="totalTagihan"]').val("");
+        $('[name="pembulatan"]').val("");
+        $('[name="totalTagihanSetelahPembulatan"]').val("");
+        $('[name="kembalian"]').val("");
+    }
+    function removeInfo() {
+        $('#info-dataCicilanPembayran').html('');
+        $('#info-jumlahPembayaranPelanggan').html('');
+        $('#info-metodePembayaran').html('');
+    }
+    function alertInfo(obj) {
+        if (obj.jumlahPembayaran) { $('#info-jumlahPembayaranPelanggan').html("* " + obj.jumlahPembayaran); }
+        if (obj.metodeBayar) { $('#info-metodePembayaran').html("* " + obj.metodeBayar); }
+    }
+    function searchAction() {
+        var NoTransaksi = $('[name="searchNoTransaksi"]').val();
+        var IdPelanggan = $('[name="searchIdPelanggan"]').val();
+        var NamaPelanggan = $('[name="searchNamaPelanggan"]').val();
+        var TanggalTransaksi = $('[name="searchTanggalTransaksi"]').val();
+        var TanggalTransaksiSampai = $('[name="searchTanggalTransaksiSampai"]').val();
+
+        NoTransaksi = { "name": "idTransaksi", "value": NoTransaksi };
+        IdPelanggan = { "name": "CustId", "value": IdPelanggan };
+        NamaPelanggan = { "name": "NamaPelanggan", "value": NamaPelanggan };
+        TanggalTransaksi = { "name": "TrxDateBegin", "value": TanggalTransaksi };
+        TanggalTransaksiSampai = { "name": "TrxDateEnd", "value": TanggalTransaksiSampai };
+
+        dataSearch = [NoTransaksi, IdPelanggan, NamaPelanggan, TanggalTransaksi, TanggalTransaksiSampai]
+        url = "doSearchPembayaran";
+        view(url, dataSearch);
+    }
+    function emptyAction() {
+        todayDate = new Date().toISOString().slice(0, 10);
+        $('[name="searchNoTransaksi"]').val("");
+        $('[name="searchIdPelanggan"]').val("");
+        $('[name="searchNamaPelanggan"]').val("");
+        $('[name="searchTanggalTransaksi"]').val(todayDate);
+        $('[name="searchTanggalTransaksiSampai"]').val(todayDate);
+    }
+    function view(url, data) {
+        var table = $('#data-trans').DataTable({
+            "bPaginate": true,
+            "bLengthChange": false,
+            "bFilter": false,
+            "bInfo": true,
+            "bAutoWidth": false,
+            "sAjaxSource": url,
+            "sAjaxDataProp": "data",
+            "fnServerParams": function (aoData) {
+                if (data) { aoData.push(data[0], data[1], data[2], data[3], data[4]); }
+            },
+            "aoColumns": [
+                { "mData": "id" },
+                {
+                    "mData": "tanggalTransaksi",
+                    className: 'text-center',
+                    render: function (data) {
+                        const date = new Date(data);
+                        return date.toLocaleDateString('en-GB', {
+                            day: 'numeric', month: 'short', year: 'numeric'
+                        }).replace(/ /g, ' ');
+                    }
+                },
+                {
+                    "mData": "custId",
+                    className: 'text-center'
+                },
+                {
+                    "mData": "nomorKtp",
+                    className: 'text-center'
+                },
+                { "mData": "custName" },
+                { "mData": "cicilanKe" },
+                { "mData": "totalTagihan" },
+                { "mData": "status" },
+                {
+                    "mData": "tanggalAktif",
+                    className: 'text-center',
+                    render: function (data) {
+                        const date = new Date(data);
+                        return date.toLocaleDateString('en-GB', {
+                            day: 'numeric', month: 'short', year: 'numeric'
+                        }).replace(/ /g, ' ');
+                    }
+                },
+                {
+                    "mData": "tanggalJatuhTempo",
+                    className: 'text-center',
+                    render: function (data) {
+                        const date = new Date(data);
+                        return date.toLocaleDateString('en-GB', {
+                            day: 'numeric', month: 'short', year: 'numeric'
+                        }).replace(/ /g, ' ');
+                    }
+                },
+                {
+                    "mData": "id",
+                    className: 'text-center',
+                    render: function (data) {
+                        data = '<button onclick="return add(' + data + ')" class="btn btn-sm btn-primary">DETAIL</button>';
+                        return data;
+                    }
+                }
+            ],
+            dom: '<bottom><"#ip" <"#info">p>',
+            language: {
+                paginate: {
+                    next: '<i class="fa-solid fa-angle-right"></i>',
+                    previous: '<i class="fa-solid fa-angle-left"></i>'
+                }
+            },
+            stateSave: true,
+            "bDestroy": true
+        });
+        setTimeout(function () {
+            var info = table.page.info();
+            $('#info').html('Halaman <span id="halaman">' + (info.page + 1) + '</span> dari ' + info.pages);
+        }, 500);
+
+    }
+
+    function add(id) {
+        clearForm();
+        removeInfo();
+
+        $('#alert').addClass('d-none');
+
+        $('#add-form').show();
+        $('#main-form').hide();
+        $('#detail-form').hide();
+
+        $('#btnDetail').attr('onclick', 'return detail(' + id + ')');
+        $('#btnHitung').attr('onclick', 'return hitung(' + id + ')');
+        $('#simpan').attr('onclick', 'return addAction()');
+        $('#simpan').html('Simpan');
+
+        window.location.hash = '#';
+        window.location.hash = '#add-form';
+
+        $.ajax({
+            type: "GET",
+            contentType: 'application/json',
+            dataType: 'json',
+            url: "doGetPembayaranDetail/" + id,
+            success: function (response) {
+                $('[name="pelanggan"]').val("{" + response.data.custId + "}-{" + response.data.namaPelanggan + "}");
+                $('[name="nomorTransaksi"]').val(response.data.id);
+                $('[name="totalNilaiPinjaman"]').val(response.data.totalPinjaman);
+                $('[name="tenor"]').val(response.data.jangkaWaktu);
+                $('[name="tglTransaksi"]').val(response.data.tanggalTransaksi);
+                $('[name="produkTransaksi"]').val(response.data.productId);
+                $('[name="tanggalJatuhTempo"]').val(response.data.tanggalJatuhTempo);
+                $('[name="namaProduk"]').val(response.data.namaProduk);
+                $('[name="keteranganProduk"]').val(response.data.keterangan);
+                $('[name="totalKewajiban"]').val(response.data.totalKewajiban);
+                $('[name="totalDenda"]').val(response.data.totalDenda);
+                var pembayaran = 0;
+                if (response.data.totalPembayaran) { pembayaran = response.data.totalPembayaran; }
+                $('[name="totalPembayaran"]').val(pembayaran);
+                $('[name="totalKewajiban"]').val(response.data.totalKewajiban);
+                $('[name="sisaKewajiban"]').val(response.data.totalDenda + response.data.totalKewajiban - pembayaran);
+            },
+            error: function (xhr, status, error) {
+
+            }
+        })
+        $.ajax({
+            type: "GET",
+            contentType: 'application/json',
+            dataType: 'json',
+            url: "doGetAllPembayaran/" + id,
+            success: function (response) {
+                var html = '';
+                for (i = 0; i < response.data.length; i++) {
+                    var tanggalBayar = "";
+                    var checkBayar = '<input type="checkbox" value="' + response.data[i].cicilanKe + '" name="checkBayar">';
+                    if (response.data[i].tanggalBayar) { tanggalBayar = response.data[i].tanggalBayar; checkBayar = ""; }
+                    const date = new Date(response.data[i].tanggalAktif);
+                    var tanggalAktif = date.toLocaleDateString('en-GB', {
+                        day: 'numeric', month: 'short', year: 'numeric'
+                    }).replace(/ /g, ' ');
+                    html += '<tr>'
+                        + '<td class="text-center">' + response.data[i].id + '</td>'
+                        + '<td class="text-center">' + response.data[i].cicilanKe + '</td>'
+                        + '<td class="text-center">' + response.data[i].pokok.toLocaleString("pt-BR", { maximumFractionDigits: 2 }) + '</td>'
+                        + '<td class="text-center">' + response.data[i].bunga.toLocaleString("pt-BR", { maximumFractionDigits: 2 }) + '</td>'
+                        + '<td class="text-center">' + response.data[i].denda.toLocaleString("pt-BR", { maximumFractionDigits: 2 }) + '</td>'
+                        + '<td class="text-center">' + (response.data[i].pokok + response.data[i].denda).toLocaleString("pt-BR", { maximumFractionDigits: 2 }) + '</td>'
+                        + '<td class="text-center">' + response.data[i].status + '</td>'
+                        + '<td class="text-center">' + tanggalAktif + '</td>'
+                        + '<td class="text-center">' + tanggalBayar + '</td>'
+                        + '<td class="text-center">' + checkBayar + '</td>'
+                        + '</tr>';
+                }
+                $('#dataCicilanPembayran').html(html);
+            },
+            error: function (xhr, status, error) {
+
+            }
+        })
+    }
+    function replaces(angka) {
+        if (angka.match(/^.*\..*$/)) {
+            angka = angka.replaceAll('.', '');
+        }
+        if (angka.match(/^.*\,.*$/)) {
+            angka = angka.replaceAll(',', '.');
+        }
+        return angka;
+    }
+    function addAction() {
+        var id = $('[name="nomorTransaksi"]').val();
+        hitung(id);
+        var checkBayar = [];
+        $('[name="checkBayar"]:checked').each(function (i) {
+            checkBayar[i] = $(this).val();
+        });
+        if (checkBayar.length == 0) {
+            $('#info-dataCicilanPembayran').html('* Harus dipilih dulu');
+            return;
+        }
+        var idTransaksi = id;
+        var totalTagihanCicilan = $('[name="totalPembayaranCicilan"]').val();
+        var totalTagihanDenda = $('[name="totalPembayaranDenda"]').val();
+        var biayaAdmTutup = $('[name="biayaAdminTutup"]').val();
+        var totalTagihan = $('[name="totalTagihan"]').val();
+        var pembulatan = $('[name="pembulatan"]').val();
+        var jumlahPembayaran = $('[name="totalTagihanSetelahPembulatan"]').val();
+        var metodeBayar = $('[name="metodePembayaran"]').val();
+
+        totalTagihanCicilan=replaces(totalTagihanCicilan);
+        totalTagihanDenda=replaces(totalTagihanDenda);
+        biayaAdmTutup=replaces(biayaAdmTutup);
+        totalTagihan=replaces(totalTagihan);
+        pembulatan=replaces(pembulatan);
+        jumlahPembayaran=replaces(jumlahPembayaran);
+
+        if (jumlahPembayaran <= 0) { $('#info-jumlahPembayaranPelanggan').html("* Tidak Boleh Kosong"); return; }
+        if (metodeBayar == "") { $('#info-metodePembayaran').html("* Tidak Boleh Kosong"); return; }
+
+        var data = {
+            idTransaksi: idTransaksi, totalTagihanCicilan: totalTagihanCicilan, totalTagihanDenda: totalTagihanDenda,
+            biayaAdmTutup: biayaAdmTutup, totalTagihan: totalTagihan, pembulatan: pembulatan, jumlahPembayaran: jumlahPembayaran,
+            metodeBayar: metodeBayar, checkBayar:checkBayar
+        }
+
+        $.ajax({
+            type: "POST",
+            data: JSON.stringify(data),
+            contentType: 'application/json',
+            dataType: 'json',
+            url: "doInsertPembayaran",
+            success: function (response) {
+                $('[name="nomorPembayaran"]').val(response.data.id);
+                $('#alert').removeClass('d-none');
+                $('#alert').removeClass('alert-danger');
+                $('#alert').removeClass('alert-primary');
+                $('#alert').addClass('show alert-success');
+                $('#message').html(response.msg);
+                $('#simpan').attr('onclick', 'return add(' + id + ')');
+                $('#simpan').html('Bayar Baru');
+                removeInfo()
+                window.location.hash = '#';
+                window.location.hash = '#add-form';
+            },
+            error: function (xhr, status, error) {
+                var obj = JSON.parse(xhr.responseText);
+                alertInfo(obj);
+            }
+        })
+    }
+    function detail(id) {
+
+        $('#add-form').hide();
+        $('#main-form').hide();
+        $('#detail-form').show();
+
+        window.location.hash = '#';
+        window.location.hash = '#detail-form';
+
+        var jasaPenyimpanan = 0;
+        var idTransaksi = "";
+
+        $.ajax({
+            type: "GET",
+            contentType: 'application/json',
+            dataType: 'json',
+            url: "doGetDetailTransaksi/" + id,
+            success: function (response) {
+                var maksimalNilaiPinjaman = response.data.totalNilaiTaksiran * response.data.ltv / 100;
+                var biayaAdminBukaAkhir = response.data.adminBuka - (response.data.adminBuka * response.data.diskonAdmBuka / 100);
+                var totalNilaiPinjaman = response.data.nilaiPencairanPelanggan + biayaAdminBukaAkhir;
+                var biayaJasaPenyimpananPerPeriode = (response.data.jasaPenyimpanan / 100 * totalNilaiPinjaman) / (response.data.jangkaWaktu / response.data.jasaPenyimpananPeriode);
+                var totalBiayaJasaPenyimpanan = (response.data.jangkaWaktu / response.data.jasaPenyimpananPeriode) * biayaJasaPenyimpananPerPeriode;
+                var totalPengembalian = totalNilaiPinjaman + totalBiayaJasaPenyimpanan + response.data.adminTutup;
+
+                jasaPenyimpanan = response.data.jasaPenyimpanan;
+                idTransaksi = response.data.id;
+
+                $('[name="detailIdPelanggan"]').val(response.data.custId);
+                $('[name="detailTglTransaksi"]').val(response.data.tanggalTransaksi);
+                $('[name="detailNomorTransaksi"]').val(response.data.id);
+                $('[name="detailProdukTransaksi"]').val(response.data.productId);
+                $('[name="detailNamaProdukTransaksi"]').val(response.data.produkName);
+                $('[name="detailKeteranganProdukTransaksi"]').val(response.data.keterangan);
+                $('[name="detailTotalNilaiTaksiran"]').val(number_format(response.data.totalNilaiTaksiran.replace('.', ',')));
+                $('[name="detailLtv"]').val(response.data.ltv.toLocaleString("pt-BR", { maximumFractionDigits: 2 }));
+                $('[name="detailMaksimalNilaiPinjaman"]').val(maksimalNilaiPinjaman.toLocaleString("pt-BR", { maximumFractionDigits: 2 }));
+                $('[name="detailNilaiPencairanPelanggan"]').val(response.data.nilaiPencairanPelanggan.toLocaleString("pt-BR", { maximumFractionDigits: 2 }));
+                $('[name="detailBiayaAdminBuka"]').val(response.data.adminBuka.toLocaleString("pt-BR", { maximumFractionDigits: 2 }));
+                $('[name="detailDiskonAdmBuka"]').val(response.data.diskonAdmBuka.toLocaleString("pt-BR", { maximumFractionDigits: 2 }));
+                $('[name="detailBiayaAdminBukaAkhir"]').val(biayaAdminBukaAkhir.toLocaleString("pt-BR", { maximumFractionDigits: 2 }));
+                $('[name="detailTotalNilaiPinjaman"]').val(totalNilaiPinjaman.toLocaleString("pt-BR", { maximumFractionDigits: 2 }));
+                $('[name="detailTanggalTransaksi"]').val(response.data.tanggalTransaksi);
+                $('[name="detailTglJatuhTempo"]').val(response.data.tanggalJatuhTempo);
+                $('[name="detailJasaPenyimpanan"]').val(response.data.jasaPenyimpanan.toLocaleString("pt-BR", { maximumFractionDigits: 2 }));
+                $('[name="detailJasaPenyimpananPeriode"]').val(response.data.jasaPenyimpananPeriode);
+                $('[name="detailBiayaJasaPenyimpananPerPeriode"]').val(biayaJasaPenyimpananPerPeriode.toLocaleString("pt-BR", { maximumFractionDigits: 2 }));
+                $('[name="detailTotalBiayaJasaPenyimpanan"]').val(totalBiayaJasaPenyimpanan.toLocaleString("pt-BR", { maximumFractionDigits: 2 }));
+                $('[name="detailBiayaAdminTutup"]').val(response.data.adminTutup.toLocaleString("pt-BR", { maximumFractionDigits: 2 }));
+                $('[name="detailTotalPengembalian"]').val(totalPengembalian.toLocaleString("pt-BR", { maximumFractionDigits: 2 }));
+            },
+            error: function (xhr, status, error) {
+
+            }
+        })
+
+        $.ajax({
+            type: "GET",
+            contentType: 'application/json',
+            dataType: 'json',
+            url: "doGetBarangTransaksi/" + id,
+            success: function (response) {
+                var html = '';
+                for (i = 0; i < response.data.length; i++) {
+                    html += '<tr>'
+                        + '<td class="text-center">' + (i + 1) + '</td>'
+                        + '<td>' + response.data[i].namaBarang + '</td>'
+                        + '<td>' + response.data[i].kondisi + '</td>'
+                        + '<td class="text-center">' + response.data[i].jlh + '</td>'
+                        + '<td class="text-end">' + response.data[i].hargaPerSatuan.toLocaleString("pt-BR", { maximumFractionDigits: 2 }) + '</td>'
+                        + '<td class="text-end">' + (response.data[i].jlh * response.data[i].hargaPerSatuan).toLocaleString("pt-BR", { maximumFractionDigits: 2 }) + '</td>'
+                        + '</tr>';
+                }
+                $('#detailDataBarangGadai').html(html);
+            },
+            error: function (xhr, status, error) {
+
+            }
+        })
+
+        $.ajax({
+            type: "GET",
+            contentType: 'application/json',
+            dataType: 'json',
+            url: "doGetCicilanTransaksi/" + id,
+            success: function (response) {
+                var html = '';
+                for (i = 0; i < response.data.length; i++) {
+                    var denda = 0;
+                    if (response.data[i].denda) { denda = response.data[i].denda; }
+                    var totalTagihan = denda + (response.data[i].pokok * jasaPenyimpanan / 100) + response.data[i].pokok;
+                    var tanggalBayar = "";
+                    if (response.data[i].tanggalBayar != null) {
+                        const date = new Date(response.data[i].tanggalBayar);
+                        const tanggalBayar = date.toLocaleDateString('en-GB', {
+                            day: 'numeric', month: 'short', year: 'numeric'
+                        }).replace(/ /g, ' ');
+                    }
+                    const date = new Date(response.data[i].tanggalAktif);
+                    const tanggalAktif = date.toLocaleDateString('en-GB', {
+                        day: 'numeric', month: 'short', year: 'numeric'
+                    }).replace(/ /g, ' ');
+
+                    html += '<tr>'
+                        + '<td class="text-center">' + idTransaksi + '</td>'
+                        + '<td class="text-center">' + (i + 1) + '</td>'
+                        + '<td class="text-center">' + response.data[i].pokok.toLocaleString("pt-BR", { maximumFractionDigits: 2 }) + '</td>'
+                        + '<td class="text-end">' + (response.data[i].pokok * jasaPenyimpanan / 100).toLocaleString("pt-BR", { maximumFractionDigits: 2 }) + '</td>'
+                        + '<td class="text-end">' + denda.toLocaleString("pt-BR", { maximumFractionDigits: 2 }) + '</td>'
+                        + '<td class="text-end">' + totalTagihan.toLocaleString("pt-BR", { maximumFractionDigits: 2 }) + '</td>'
+                        + '<td>' + response.data[i].status + '</td>'
+                        + '<td class="text-end">' + tanggalAktif + '</td>'
+                        + '<td class="text-end">' + tanggalBayar + '</td>'
+                        + '</tr>';
+                }
+                $('#detailDataCicilan').html(html);
+            },
+            error: function (xhr, status, error) {
+
+            }
+        })
+    }
+
+    (function ($) {
+        $.fn.inputFilter = function (callback, errMsg) {
+            return this.on("input keydown keyup mousedown mouseup select contextmenu drop focusout", function (e) {
+                if (callback(this.value)) {
+                    // Accepted value
+                    if (["keydown", "mousedown", "focusout"].indexOf(e.type) >= 0) {
+                        $(this).removeClass("input-error");
+                        this.setCustomValidity("");
+                    }
+                    this.oldValue = this.value;
+                    this.oldSelectionStart = this.selectionStart;
+                    this.oldSelectionEnd = this.selectionEnd;
+                } else if (this.hasOwnProperty("oldValue")) {
+                    // Rejected value - restore the previous one
+                    $(this).addClass("input-error");
+                    this.setCustomValidity(errMsg);
+                    this.reportValidity();
+                    this.value = this.oldValue;
+                    this.setSelectionRange(this.oldSelectionStart, this.oldSelectionEnd);
+                } else {
+                    // Rejected value - nothing to restore
+                    this.value = "";
+                }
+            });
+        };
+    }(jQuery));
+    $(document).ready(function () {
+        $('[name="jumlahBarangGadai"]').inputFilter(function (value) {
+            return /^\d*$/.test(value);
+        }, "Only number allowed");
+        $('[name="hargaBarangGadai"]').inputFilter(function (value) {
+            return /^(\d|\,|\.)*$/.test(value);
+        }, "Only number allowed");
+        $('[name="nilaiPencairanPelanggan"]').inputFilter(function (value) {
+            return /^(\d|\,|\.)*$/.test(value);
+        }, "Only number allowed");
+        $('[name="diskonAdmBuka"]').inputFilter(function (value) {
+            return /^(\d|\,)*$/.test(value);
+        }, "Only number allowed");
+
+        $(document).on("click", ".paginate_button", function () {
+            var pageclick = $('.paginate_button.current').html();
+            $('#halaman').html(pageclick);
+        });
+    });
+
+    function number_format(num) {
+        return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+    }
+    function formatDate(date) {
+        var d = new Date(date),
+            month = '' + (d.getMonth() + 1),
+            day = '' + d.getDate(),
+            year = d.getFullYear();
+
+        if (month.length < 2)
+            month = '0' + month;
+        if (day.length < 2)
+            day = '0' + day;
+
+        return [day, month, year].join('-');
+    }
+    function formatJumlahPembayaranPelanggan() {
+        var value = $('[name="jumlahPembayaranPelanggan"]').val();
+        if (value.match(/^.*\..*$/)) {
+            value = value.replaceAll('.', '');
+        }
+        if (value.match(/^.*\,.*$/)) {
+            end = value.substr(value.indexOf(','), 3);
+            value = value.substr(0, value.indexOf(','));
+            value = value + end;
+        } else if (value.length > 10) {
+            value = value.substr(0, 10) + "," + value.substr(10, value.length);
+        }
+        $('[name="jumlahPembayaranPelanggan"]').val(number_format(value));
+    }
+    function formatDiskon() {
+        var value = $('[name="diskon"]').val();
+        if (value.match(/^.*\..*$/)) {
+            value = value.replaceAll('.', '');
+        }
+        if (value.match(/^.*\,.*$/)) {
+            end = value.substr(value.indexOf(','), 3);
+            value = value.substr(0, value.indexOf(','));
+            value = value + end;
+        } else if (value.length > 10) {
+            value = value.substr(0, 10) + "," + value.substr(10, value.length);
+        }
+        $('[name="diskon"]').val(number_format(value));
+    }
+</script>
+
+</html>

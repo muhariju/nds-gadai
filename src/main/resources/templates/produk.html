@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaft.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pengaturan Produk</title>
+    <link rel="shortcut icon" href="https://cdn-icons-png.flaticon.com/512/622/622848.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css" rel="stylesheet"
+        crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa"
+        crossorigin="anonymous"></script>
+
+    <!-- Include Required Prerequisites -->
+    <script type="text/javascript" src="//cdn.jsdelivr.net/jquery/1/jquery.min.js"></script>
+    <script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+
+    <!-- Datatable -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css" />
+    <script type="text/javascript" src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+
+    <style>
+        #ip {
+            display: flex;
+            margin-top: 20px;
+        }
+
+        .dataTables_paginate {
+            float: unset;
+        }
+
+        #info {
+            margin-left: auto;
+            padding: 10px;
+            padding-top: 13px;
+            min-height: 46px;
+        }
+
+        input:read-only,
+        textarea:read-only {
+            background-color: #eee;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    </nav>
+    <div class="container-fluid mt-3">
+        <div class="row">
+            <div class="col-12">
+                <h2 class="mb-4">Pengaturan Produk</h2>
+                <div class="card col-12">
+                    <div class="card-header">
+                        <div class="float-start p-2">
+                            <b>Cari Data Produk</b>
+                        </div>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row">
+                            <div class="col-lg-2 mb-2">
+                                <label class="py-2">Tipe Produk</label>
+                            </div>
+                            <div class="col-lg-5 mb-2">
+                                <select name="searchTipeProduk" class="form-control">
+                                    <option value=""></option>
+                                    <option value="Konsinyasi Cicilan Tetap">Konsinyasi Cicilan Tetap</option>
+                                    <option value="Konsinyasi Cicilan Fleksibel">Konsinyasi Cicilan Fleksibel</option>
+                                </select>
+                            </div>
+                            <div class="col-lg-1 text-start mb-2 ps-4">
+                                <label class="py-2">Status</label>
+                            </div>
+                            <div class="col-lg-4 mb-2">
+                                <select name="searchRecStatus" class="form-control">
+                                    <option value=""></option>
+                                    <option value="A">Active</option>
+                                    <option value="N">Nonactive</option>
+                                </select>
+                            </div>
+
+                            <div class="col-lg-2 mb-2">
+                                <label class="py-2">Kode Produk</label>
+                            </div>
+                            <div class="col-lg-5 mb-2">
+                                <input type="text" name="searchId" class="form-control">
+                            </div>
+                            <div class="col-lg-1 text-start mb-2 ps-4">
+                                <label class="py-1">LTV</label>
+                            </div>
+                            <div class="row col-lg-4 mb-2">
+                                <div class="col-3">
+                                    <input type="text" name="searchLtv" class="form-control">
+                                </div>
+                                <div class="col-lg-3 text-center px-0">
+                                    <label class="py-1">sampai</label>
+                                </div>
+                                <div class="col-lg-3">
+                                    <input type="text" name="searchLtvSampai" class="form-control">
+                                </div>
+                                <div class="col-lg-3 text-start ps-0">
+                                    <label class="py-1">%</label>
+                                </div>
+                            </div>
+
+
+                            <div class="col-lg-2 mb-2">
+                                <label class="py-2">Nama Produk</label>
+                            </div>
+                            <div class="col-lg-5 mb-2">
+                                <input type="text" name="searchNamaProduk" class="form-control">
+                            </div>
+                            <div class="col-lg-2 text-start mb-2 ps-4">
+                                <label class="py-1">Biaya Jasa Penyimpanan</label>
+                            </div>
+                            <div class="row col-lg-3 mb-2">
+                                <div class="col-4">
+                                    <input type="text" name="searchJasaPenyimpanan" class="form-control">
+                                </div>
+                                <div class="col-lg-3 text-center px-0">
+                                    <label class="py-1">sampai</label>
+                                </div>
+                                <div class="col-lg-4">
+                                    <input type="text" name="searchJasaPenyimpananSampai" class="form-control">
+                                </div>
+                                <div class="col-lg-1 text-start ps-0">
+                                    <label class="py-1">%</label>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-5"></div>
+                            <div class="ms-auto col-lg-10 pt-2">
+                                <button class="btn btn-primary me-3" onclick="return searchAction()">
+                                    Cari
+                                </button>
+                                <button class="btn btn-primary mx-3" onclick="return emptyAction()">
+                                    Kosongkan
+                                </button>
+                                <button class="btn btn-primary mx-3" onclick="return add()">
+                                    Produk Baru
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr />
+                <div class="table-responsive">
+                    <table class="table table-striped w-100" id="data-produk">
+                        <thead>
+                            <tr class="bg-primary text-white">
+                                <th class="text-center">Tipe Produk</th>
+                                <th class="text-center">Nama Produk</th>
+                                <th class="text-center">LTV</th>
+                                <th class="text-center">Biaya Jasa Penyimpanan</th>
+                                <th class="text-center">Status</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript">
+    var url = "doGetAllProduk";
+    var dataSearch = "";
+    $('nav').load('/fragments/nav');
+    view(url, dataSearch);
+
+    function closeAlert() {
+        $('#alert').addClass('d-none');
+    }
+
+    function btnKembali(status, onclick) {
+        if (status == true) {
+            $('.btn-kembali').removeAttr('data-bs-dismiss');
+            $('.btn-kembali').attr('onclick', 'return ' + onclick);
+        } else {
+            $('.btn-kembali').removeAttr('onclick');
+            $('.btn-kembali').attr('data-bs-dismiss', 'modal');
+        }
+    }
+    function clearForm() {
+        $('[name="id"]').val("");
+        $('[name="tipeProduk"]').val("Konsinyasi Cicilan Tetap");
+        $('[name="namaProduk"]').val("");
+        $('[name="keterangan"]').val("");
+        $('[name="ltv"]').val("");
+        $('[name="jangkaWaktu"]').val("");
+        $('[name="adminBuka"]').val("");
+        $('[name="adminBukaType"]').val("PERSEN");
+        $('[name="adminTutup"]').val("");
+        $('[name="adminTutupType"]').val("PERSEN");
+        $('[name="jasaPenyimpanan"]').val("");
+        $('[name="jasaPenyimpananPeriode"]').val("");
+        $('[name="dendaKeterlambatan"]').val("");
+        $('[name="dendaKeterlambatanPeriode"]').val("");
+        $('[name="tanggalBuat"]').val("");
+        $('[name="tanggalUpdate"]').val("");
+    }
+    function readonlyForm(readonly) {
+        $('[name="id"]').prop('readonly', readonly);
+        $('[name="tipeProduk"]').prop('disabled', readonly);
+        $('[name="namaProduk"]').prop('readonly', readonly);
+        $('[name="keterangan"]').prop('readonly', readonly);
+        $('[name="ltv"]').prop('readonly', readonly);
+        $('[name="jangkaWaktu"]').prop('readonly', readonly);
+        $('[name="adminBuka"]').prop('readonly', readonly);
+        $('[name="adminBukaType"]').prop('disabled', readonly);
+        $('[name="adminTutup"]').prop('readonly', readonly);
+        $('[name="adminTutupType"]').prop('disabled', readonly);
+        $('[name="jasaPenyimpanan"]').prop('readonly', readonly);
+        $('[name="jasaPenyimpananPeriode"]').prop('readonly', readonly);
+        $('[name="dendaKeterlambatan"]').prop('readonly', readonly);
+        $('[name="dendaKeterlambatanPeriode"]').prop('readonly', readonly);
+    }
+    function removeInfo() {
+        $('#info-id').html('');
+        $('#info-tipeProduk').html('');
+        $('#info-namaProduk').html('');
+        $('#info-keterangan').html('');
+        $('#info-ltv').html('');
+        $('#info-jangkaWaktu').html('');
+        $('#info-adminBuka').html('');
+        $('#info-adminBukaType').html('');
+        $('#info-adminTutup').html('');
+        $('#info-adminTutupType').html('');
+        $('#info-jasaPenyimpanan').html('');
+        $('#info-dendaKeterlambatan').html('');
+        $('.info-required').html('');
+    }
+    function addInfo() {
+        $('.info-required').html('*');
+    }
+    function alertInfo(obj) {
+        if (obj.id) { $('#info-id').html("* " + obj.id); }
+        if (obj.tipeProduk) { $('#info-tipeProduk').html("* " + obj.tipeProduk); }
+        if (obj.namaProduk) { $('#info-namaProduk').html("* " + obj.namaProduk); }
+        if (obj.keterangan) { $('#info-keterangan').html("* " + obj.keterangan); }
+        if (obj.ltv) { $('#info-ltv').html("* " + obj.ltv); }
+        if (obj.jangkaWaktu) { $('#info-jangkaWaktu').html("* " + obj.jangkaWaktu); }
+        if (obj.adminBukaType) {
+            if (obj.adminBuka && obj.adminBuka != obj.adminBukaType) { $('#info-adminBuka').html("* " + obj.adminBukaType + ", " + obj.adminBuka); }
+            else { $('#info-adminBuka').html("* " + obj.adminBukaType); }
+        } else {
+            if (obj.adminBuka) { $('#info-adminBuka').html("* " + obj.adminBuka); }
+        }
+        if (obj.adminTutupType) {
+            if (obj.adminTutup && obj.adminTutup != obj.adminTutupType) { $('#info-adminTutup').html("* " + obj.adminTutupType + ", " + obj.adminTutup); }
+            else { $('#info-adminTutup').html("* " + obj.adminTutupType); }
+        } else {
+            if (obj.adminTutup) { $('#info-adminTutup').html("* " + obj.adminTutup); }
+        }
+        if (obj.jasaPenyimpananPeriode) {
+            if (obj.jasaPenyimpanan && obj.jasaPenyimpanan != obj.jasaPenyimpananPeriode) { $('#info-jasaPenyimpanan').html("* " + obj.jasaPenyimpanan + ", " + obj.jasaPenyimpananPeriode); }
+            else { $('#info-jasaPenyimpanan').html("* " + obj.jasaPenyimpananPeriode); }
+        } else {
+            if (obj.jasaPenyimpanan) { $('#info-jasaPenyimpanan').html("* " + obj.jasaPenyimpanan); }
+        }
+        if (obj.dendaKeterlambatanPeriode) {
+            if (obj.dendaKeterlambatan && obj.dendaKeterlambatan != obj.dendaKeterlambatanPeriode) { $('#info-dendaKeterlambatan').html("* " + obj.dendaKeterlambatan + ", " + obj.dendaKeterlambatanPeriode); }
+            else { $('#info-dendaKeterlambatan').html("* " + obj.dendaKeterlambatanPeriode); }
+        } else {
+            if (obj.dendaKeterlambatan) { $('#info-dendaKeterlambatan').html("* " + obj.dendaKeterlambatan); }
+        }
+    }
+    function searchAction() {
+        var id = $('[name="searchId"]').val();
+        var tipeProduk = $('[name="searchTipeProduk"]').val();
+        var namaProduk = $('[name="searchNamaProduk"]').val();
+        var recStatus = $('[name="searchRecStatus"]').val();
+        var ltv = $('[name="searchLtv"]').val();
+        var ltvSampai = $('[name="searchLtvSampai"]').val();
+        var jasaPenyimpanan = $('[name="searchJasaPenyimpanan"]').val();
+        var jasaPenyimpananSampai = $('[name="searchJasaPenyimpananSampai"]').val();
+
+        id = { "name": "id", "value": id };
+        tipeProduk = { "name": "tipeProduk", "value": tipeProduk };
+        namaProduk = { "name": "namaProduk", "value": namaProduk };
+        recStatus = { "name": "recStatus", "value": recStatus };
+        ltv = { "name": "ltv", "value": ltv };
+        ltvSampai = { "name": "ltvSampai", "value": ltvSampai };
+        jasaPenyimpanan = { "name": "jasaPenyimapanan", "value": jasaPenyimpanan };
+        jasaPenyimpananSampai = { "name": "jasaPenyimpananSampai", "value": jasaPenyimpananSampai };
+        dataSearch = [id, tipeProduk, namaProduk, recStatus, ltv, ltvSampai, jasaPenyimpanan, jasaPenyimpananSampai]
+        url = "doSearchProduk";
+        view(url, dataSearch);
+    }
+    function emptyAction() {
+        $('[name="searchId"]').val("");
+        $('[name="searchTipeProduk"]').val("");
+        $('[name="searchNamaProduk"]').val("");
+        $('[name="searchKeterangan"]').val("");
+        $('[name="searchRecStatus"]').val("");
+        $('[name="searchLtv"]').val("");
+        $('[name="searchLtvSampai"]').val("");
+        $('[name="searchJasaPenyimpanan"]').val("");
+        $('[name="searchJasaPenyimpananSampai"]').val("");
+    }
+
+    function showDetailandAdd() {
+        removeInfo();
+        btnKembali(false, "");
+        $('.body-delete').hide();
+        $('.body-input').show();
+        $('#ModalButton').show();
+        $('#ModalButton').addClass('btn-primary');
+        $('#ModalButton').removeClass('btn-danger');
+        $('#alert').addClass('d-none');
+    }
+    function view(url, data) {
+        var table = $('#data-produk').DataTable({
+            "bPaginate": true,
+            "bLengthChange": false,
+            "bFilter": false,
+            "bInfo": true,
+            "bAutoWidth": true,
+            "sAjaxSource": url,
+            "sAjaxDataProp": "data",
+            "fnServerParams": function (aoData) {
+                if (data) { aoData.push(data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7]); }
+            },
+            "aoColumns": [
+                { "mData": "tipeProduk" },
+                { "mData": "namaProduk" },
+                {
+                    "mData": "ltv",
+                    className: 'text-center',
+                    render: function (data) {
+                        return data + "%";
+                    }
+                },
+                {
+                    "mData": "jasaPenyimpanan",
+                    className: 'text-center',
+                    render: function (data) {
+                        return data + "%";
+                    }
+                },
+                {
+                    "mData": "recStatus",
+                    className: 'text-center',
+                    render: function (data) {
+                        if (data == "A") { data = "Active"; }
+                        if (data == "N") { data = "Nonactive"; }
+                        return data;
+                    }
+                },
+                {
+                    "mData": "id",
+                    className: 'text-center',
+                    render: function (data) {
+                        data = '<button onclick="return detail(' + data + ')" class="btn btn-sm btn-primary">DETAIL</button>';
+                        return data;
+                    }
+                }
+            ],
+            dom: '<bottom><"#ip" <"#info">p>',
+            language: {
+                paginate: {
+                    next: '<i class="fa-solid fa-angle-right"></i>',
+                    previous: '<i class="fa-solid fa-angle-left"></i>'
+                }
+            },
+            stateSave: true,
+            "bDestroy": true
+        });
+        setTimeout(function () {
+            var info = table.page.info();
+            $('#info').html('Halaman <span id="halaman">' + (info.page + 1) + '</span> dari ' + info.pages);
+        }, 500);
+
+    }
+    function add() {
+        showDetailandAdd();
+        addInfo();
+        clearForm();
+        readonlyForm(false);
+
+        $('#Modal').modal('show');
+        $('.body-detail').hide();
+        $('.btn-delete').hide();
+        $('#ModalLabel').html('Pengaturan Produk - Baru');
+        $('#ModalButton').html('Simpan');
+        $('#ModalButton').attr('onclick', 'return addAction()');
+    }
+    function addAction() {
+        var id = $('[name="id"]').val();
+        var tipeProduk = $('[name="tipeProduk"]').val();
+        var namaProduk = $('[name="namaProduk"]').val();
+        var keterangan = $('[name="keterangan"]').val();
+        var ltv = $('[name="ltv"]').val();
+        var jangkaWaktu = $('[name="jangkaWaktu"]').val();
+        var adminBuka = $('[name="adminBuka"]').val().replaceAll('.', '');
+        var adminBukaType = $('[name="adminBukaType"]').val();
+        var adminTutup = $('[name="adminTutup"]').val().replaceAll('.', '');
+        var adminTutupType = $('[name="adminTutupType"]').val();
+        var jasaPenyimpanan = $('[name="jasaPenyimpanan"]').val();
+        var jasaPenyimpananPeriode = $('[name="jasaPenyimpananPeriode"]').val();
+        var dendaKeterlambatan = $('[name="dendaKeterlambatan"]').val();
+        var dendaKeterlambatanPeriode = $('[name="dendaKeterlambatanPeriode"]').val();
+        var data = {
+            id: id, tipeProduk: tipeProduk, namaProduk: namaProduk, keterangan: keterangan,
+            ltv: ltv, jangkaWaktu: jangkaWaktu, adminBuka: adminBuka, adminBukaType: adminBukaType,
+            adminTutup: adminTutup, adminTutupType: adminTutupType, jasaPenyimpanan: jasaPenyimpanan,
+            jasaPenyimpananPeriode: jasaPenyimpananPeriode, dendaKeterlambatan: dendaKeterlambatan,
+            dendaKeterlambatanPeriode: dendaKeterlambatanPeriode
+        }
+        
+        if(jangkaWaktu % jasaPenyimpananPeriode > 0){ return; }
+        removeInfo();
+        addInfo();
+
+        $.ajax({
+            type: "POST",
+            data: JSON.stringify(data),
+            contentType: 'application/json',
+            dataType: 'json',
+            url: "doInsert",
+            success: function (response) {
+                view(url, "");
+                $('#alert').removeClass('d-none');
+                $('#alert').removeClass('alert-danger');
+                $('#alert').removeClass('alert-primary');
+                $('#alert').addClass('show alert-success');
+                $('#message').html(response.msg);
+                clearForm();
+                emptyAction();
+            },
+            error: function (xhr, status, error) {
+                var obj = JSON.parse(xhr.responseText);
+                alertInfo(obj);
+            }
+        })
+    }
+    function getDetail(id) {
+        showDetailandAdd();
+        readonlyForm(true);
+
+        $('.body-detail').show();
+        $('.btn-delete').show();
+        $('#ModalLabel').html('Pengaturan Produk - Detail');
+        $('#ModalButton').html('Ubah');
+        $('#ModalButton').attr('onclick', 'return update("' + id + '")');
+
+        $.ajax({
+            type: "GET",
+            contentType: 'application/json',
+            dataType: 'json',
+            url: "doGetDetailProduk/" + id,
+            success: function (response) {
+
+                $('[name="id"]').val(response.data.id);
+                $('[name="tipeProduk"]').val(response.data.tipeProduk);
+                $('[name="namaProduk"]').val(response.data.namaProduk);
+                $('[name="keterangan"]').val(response.data.keterangan);
+                $('[name="ltv"]').val(response.data.ltv);
+                $('[name="jangkaWaktu"]').val(response.data.jangkaWaktu);
+                $('[name="adminBuka"]').val(response.data.adminBuka);
+                $('[name="adminBukaType"]').val(response.data.adminBukaType);
+                $('[name="adminTutup"]').val(response.data.adminTutup);
+                $('[name="adminTutupType"]').val(response.data.adminTutupType);
+                $('[name="jasaPenyimpanan"]').val(response.data.jasaPenyimpanan);
+                $('[name="jasaPenyimpananPeriode"]').val(response.data.jasaPenyimpananPeriode);
+                $('[name="dendaKeterlambatan"]').val(response.data.dendaKeterlambatan);
+                $('[name="dendaKeterlambatanPeriode"]').val(response.data.dendaKeterlambatanPeriode);
+
+                $('[name="tanggalBuat"]').val(response.data.creatorId + " - Nama User / " + response.data.createdDate);
+                $('[name="tanggalUpdate"]').val("-");
+                if (response.data.updatedDate) {
+                    $('[name="tanggalUpdate"]').val(response.data.updaterId + " - Nama User / " + response.data.updatedDate);
+                }
+                $('.btn-delete').attr('onclick', 'return remove("' + id + '","' + response.data.namaProduk + '")');
+                if (response.data.recStatus == "N") {
+                    $('.btn-delete').hide();
+                    $('#ModalButton').hide();
+                }
+            },
+            error: function (xhr, status, error) {
+                var obj = JSON.parse(xhr.responseText);
+                $('#alert').removeClass('d-none');
+                $('#alert').addClass('show alert-danger');
+                $('#alert').removeClass('alert-primary');
+                $('#alert').removeClass('alert-success');
+                $('#message').html(obj.msg);
+            }
+        })
+    }
+    function detail(id) {
+        $('#Modal').modal('show');
+        getDetail(id);
+    }
+    function update(id) {
+        closeAlert();
+        removeInfo();
+        addInfo();
+        readonlyForm(false);
+        btnKembali(true, 'getDetail("' + id + '")');
+        $('[name="id"]').prop('readonly', true);
+        $('[name="tipeProduk"]').prop('disabled', true);
+        $('.btn-delete').hide();
+        $('#ModalLabel').html('Pengaturan Produk - Ubah');
+        $('#ModalButton').html('Simpan');
+        $('#ModalButton').attr('onclick', 'return updateAction(' + id + ')');
+    }
+    function updateAction(id) {
+        var tipeProduk = $('[name="tipeProduk"]').val();
+        var namaProduk = $('[name="namaProduk"]').val();
+        var keterangan = $('[name="keterangan"]').val();
+        var ltv = $('[name="ltv"]').val();
+        var jangkaWaktu = $('[name="jangkaWaktu"]').val();
+        var adminBuka = $('[name="adminBuka"]').val().replaceAll('.', '');
+        var adminBukaType = $('[name="adminBukaType"]').val();
+        var adminTutup = $('[name="adminTutup"]').val().replaceAll('.', '');
+        var adminTutupType = $('[name="adminTutupType"]').val();
+        var jasaPenyimpanan = $('[name="jasaPenyimpanan"]').val();
+        var jasaPenyimpananPeriode = $('[name="jasaPenyimpananPeriode"]').val();
+        var dendaKeterlambatan = $('[name="dendaKeterlambatan"]').val();
+        var dendaKeterlambatanPeriode = $('[name="dendaKeterlambatanPeriode"]').val();
+        var data = {
+            id: id, tipeProduk: tipeProduk, namaProduk: namaProduk, keterangan: keterangan,
+            ltv: ltv, jangkaWaktu: jangkaWaktu, adminBuka: adminBuka, adminBukaType: adminBukaType,
+            adminTutup: adminTutup, adminTutupType: adminTutupType, jasaPenyimpanan: jasaPenyimpanan,
+            jasaPenyimpananPeriode: jasaPenyimpananPeriode, dendaKeterlambatan: dendaKeterlambatan,
+            dendaKeterlambatanPeriode: dendaKeterlambatanPeriode
+        }
+
+        if(jangkaWaktu % jasaPenyimpananPeriode > 0){ return; }
+        removeInfo();
+        addInfo();
+
+        $.ajax({
+            type: "PUT",
+            data: JSON.stringify(data),
+            contentType: 'application/json',
+            dataType: 'json',
+            url: "doUpdate",
+            success: function (response) {
+                view(url, "");
+                getDetail(id);
+                $('#alert').removeClass('d-none');
+                $('#alert').removeClass('alert-danger');
+                $('#alert').addClass('show alert-info');
+                $('#alert').removeClass('alert-success');
+                $('#message').html(response.msg);
+                emptyAction();
+            },
+            error: function (xhr, status, error) {
+                var obj = JSON.parse(xhr.responseText);
+                alertInfo(obj);
+            }
+        })
+    }
+    function remove(id, nama) {
+        btnKembali(true, 'getDetail("' + id + '")');
+
+        $('#Modal').modal('show');
+        $('.body-input').hide();
+        $('.body-delete').show();
+        $('.btn-delete').hide();
+        $('#ModalLabel').html('Pengaturan Produk - Hapus');
+        $('#ModalButton').html('Hapus');
+        $('#ModalButton').attr('onclick', 'return removeAction(' + id + ')');
+        $('#ModalButton').removeClass('btn-primary');
+        $('#ModalButton').addClass('btn-danger');
+
+        $('#hapus_nama').html(nama);
+    }
+    function removeAction(id) {
+        $.ajax({
+            type: "DELETE",
+            data: JSON.stringify({ id: id }),
+            contentType: 'application/json',
+            dataType: 'json',
+            url: "doDelete",
+            success: function (response) {
+                view(url, "");
+                $('#alert').removeClass('d-none');
+                $('#alert').removeClass('alert-success');
+                $('#alert').removeClass('alert-primary');
+                $('#alert').addClass('show alert-danger');
+                $('#message').html(response.msg);
+                emptyAction();
+                setTimeout(function () {
+                    $('#Modal').modal('hide');
+                }, 1000);
+            }
+        })
+    }
+    (function ($) {
+        $.fn.inputFilter = function (callback, errMsg) {
+            return this.on("input keydown keyup mousedown mouseup select contextmenu drop focusout", function (e) {
+                if (callback(this.value)) {
+                    // Accepted value
+                    if (["keydown", "mousedown", "focusout"].indexOf(e.type) >= 0) {
+                        $(this).removeClass("input-error");
+                        this.setCustomValidity("");
+                    }
+                    this.oldValue = this.value;
+                    this.oldSelectionStart = this.selectionStart;
+                    this.oldSelectionEnd = this.selectionEnd;
+                } else if (this.hasOwnProperty("oldValue")) {
+                    // Rejected value - restore the previous one
+                    $(this).addClass("input-error");
+                    this.setCustomValidity(errMsg);
+                    this.reportValidity();
+                    this.value = this.oldValue;
+                    this.setSelectionRange(this.oldSelectionStart, this.oldSelectionEnd);
+                } else {
+                    // Rejected value - nothing to restore
+                    this.value = "";
+                }
+            });
+        };
+    }(jQuery));
+    $(document).ready(function () {
+        $('[name="searchLtv"]').inputFilter(function (value) {
+            return /^\d*$/.test(value);
+        }, "Only number allowed");
+        $('[name="searchLtvSampai"]').inputFilter(function (value) {
+            return /^\d*$/.test(value);
+        }, "Only number allowed");
+        $('[name="ltv"]').inputFilter(function (value) {
+            return /^(\d|\,)*$/.test(value);
+        }, "Only number allowed");
+        $('[name="jangkaWaktu"]').inputFilter(function (value) {
+            return /^\d*$/.test(value);
+        }, "Only number allowed");
+        $('[name="adminBuka"]').inputFilter(function (value) {
+            var Type = $('[name="adminBukaType"]').val();
+            if (Type == "NOMINAL") {
+                return /^(\d|\,|\.)*$/.test(value);
+            }
+            return /^\d|\.*$/.test(value);
+        }, "Only number allowed");
+        $('[name="adminTutup"]').inputFilter(function (value) {
+            var Type = $('[name="adminTutupType"]').val();
+            if (Type == "NOMINAL") {
+                return /^(\d|\,|\.)*$/.test(value);
+            }
+            return /^\d|\.*$/.test(value);
+        }, "Only number allowed");
+        $('[name="jasaPenyimpanan"]').inputFilter(function (value) {
+            return /^(\d|\,)*$/.test(value);
+        }, "Only number allowed");
+        $('[name="jasaPenyimpananPeriode"]').inputFilter(function (value) {
+            return /^\d*$/.test(value);
+        }, "Only number allowed");
+        $('[name="dendaKeterlambatan"]').inputFilter(function (value) {
+            return /^(\d|\,)*$/.test(value);
+        }, "Only number allowed");
+        $('[name="dendaKeterlambatanPeriode"]').inputFilter(function (value) {
+            return /^(\d)*$/.test(value);
+        }, "Only number allowed");
+        $(document).on("click", ".paginate_button", function () {
+            var pageclick = $('.paginate_button.current').html();
+            $('#halaman').html(pageclick);
+        });
+    });
+
+    function number_format(num) {
+        return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+    }
+    function formatDate(date) {
+        var d = new Date(date),
+            month = '' + (d.getMonth() + 1),
+            day = '' + d.getDate(),
+            year = d.getFullYear();
+
+        if (month.length < 2)
+            month = '0' + month;
+        if (day.length < 2)
+            day = '0' + day;
+
+        return [day, month, year].join('-');
+    }
+    function formatLtv() {
+        var value = $('[name="ltv"]').val();
+        if (value.match(/^.*\,.*$/)) {
+            end = value.substr(value.indexOf(','), 3);
+            value = value.substr(0, value.indexOf(','));
+            value = value + end;
+        } else if (value.length > 3) {
+            if (value.length == 6) { value = value.substr(0, 5); }
+            value = value.substr(0, 3) + "," + value.substr(3, value.length);
+        }
+
+        $('[name="ltv"]').val(value);
+    }
+
+    function formatJasaPenyimpanan() {
+        var jangkaWaktu = $('[name="jangkaWaktu"]').val();
+        var value = $('[name="jasaPenyimpanan"]').val();
+        if (value.match(/^.*\,.*$/)) {
+            end = value.substr(value.indexOf(','), 3);
+            value = value.substr(0, value.indexOf(','));
+            value = value + end;
+        } else if (value.length > 3) {
+            if (value.length == 6) { value = value.substr(0, 5); }
+            value = value.substr(0, 3) + "," + value.substr(3, value.length);
+        }
+        $('[name="jasaPenyimpanan"]').val(value);
+    }
+    function formatJasaPenyimpananPeriode() {
+        var jangkaWaktu = $('[name="jangkaWaktu"]').val();
+        var value = $('[name="jasaPenyimpananPeriode"]').val();
+        $('#info-jasaPenyimpanan').html("");
+        if (jangkaWaktu % value > 0) { $('#info-jasaPenyimpanan').html("* Periode biaya Jasa Penyimpanan harus kelipatan dari jangka waktu."); }
+    }
+
+    function formatDendaKeterlambatan() {
+        var value = $('[name="dendaKeterlambatan"]').val();
+        if (value.match(/^.*\,.*$/)) {
+            end = value.substr(value.indexOf(','), 3);
+            value = value.substr(0, value.indexOf(','));
+            value = value + end;
+        } else if (value.length > 3) {
+            if (value.length == 6) { value = value.substr(0, 5); }
+            value = value.substr(0, 3) + "," + value.substr(3, value.length);
+        }
+
+        $('[name="dendaKeterlambatan"]').val(value);
+    }
+
+    function formatAdminBuka() {
+        var Type = $('[name="adminBukaType"]').val();
+        var value = $('[name="adminBuka"]').val();
+        if (Type == "NOMINAL") {
+            var value = $('[name="adminBuka"]').val();
+            value = value.replaceAll('.', '');
+            if (value.match(/^.*\,.*$/)) {
+                end = value.substr(value.indexOf(','), 3);
+                value = value.substr(0, value.indexOf(','));
+                value = value + end;
+            }
+            value = number_format(value);
+        } else {
+            if (value.match(/^.*\,.*$/)) {
+                end = value.substr(value.indexOf(','), 3);
+                value = value.substr(0, value.indexOf(','));
+                value = value + end;
+            } else if (value.length > 3) {
+                if (value.length == 6) { value = value.substr(0, 5); }
+                value = value.substr(0, 3) + "," + value.substr(3, value.length);
+            }
+        }
+        $('[name="adminBuka"]').val(value);
+    }
+    function formatAdminTutup() {
+        var Type = $('[name="adminTutupType"]').val();
+        var value = $('[name="adminTutup"]').val();
+        if (Type == "NOMINAL") {
+            var value = $('[name="adminTutup"]').val();
+            value = value.replaceAll('.', '');
+            if (value.match(/^.*\,.*$/)) {
+                end = value.substr(value.indexOf(','), 3);
+                value = value.substr(0, value.indexOf(','));
+                value = value + end;
+            }
+            value = number_format(value);
+        } else {
+            if (value.match(/^.*\,.*$/)) {
+                end = value.substr(value.indexOf(','), 3);
+                value = value.substr(0, value.indexOf(','));
+                value = value + end;
+            } else if (value.length > 3) {
+                if (value.length == 6) { value = value.substr(0, 5); }
+                value = value.substr(0, 3) + "," + value.substr(3, value.length);
+            }
+        }
+        $('[name="adminTutup"]').val(value);
+    }
+
+    function formatAdminBukaType() {
+        $('[name="adminBuka"]').val("");
+        $('[name="adminBuka"]').attr("maxlength", "6");
+        $('.w-adminBuka').addClass("col-2");
+        $('.w-adminBuka').removeClass("col-4");
+        $('.end-adminBuka').html("%");
+        var Type = $('[name="adminBukaType"]').val();
+        if (Type == "NOMINAL") {
+            $('[name="adminBuka"]').removeAttr("maxlength");
+            $('.w-adminBuka').removeClass("col-2");
+            $('.w-adminBuka').addClass("col-4");
+            $('.end-adminBuka').html("");
+        }
+    }
+    function formatAdminTutupType() {
+        $('[name="adminTutup"]').val("");
+        $('[name="adminTutup"]').attr("maxlength", "6");
+        $('.w-adminTutup').addClass("col-2");
+        $('.w-adminTutup').removeClass("col-4");
+        $('.end-adminTutup').html("%");
+        var Type = $('[name="adminTutupType"]').val();
+        if (Type == "NOMINAL") {
+            $('[name="adminTutup"]').removeAttr("maxlength");
+            $('.w-adminTutup').removeClass("col-2");
+            $('.w-adminTutup').addClass("col-4");
+            $('.end-adminTutup').html("");
+        }
+    }
+
+    function formatTipeProduk() {
+        var Tipe = $('[name="tipeProduk"]').val();
+        $('.end-jangkaWaktu').html("bulan");
+        $('.end-jasaPenyimpanan').html("bulan");
+        if (Tipe == "Konsinyasi Cicilan Fleksibel") {
+            $('.end-jangkaWaktu').html("hari");
+            $('.end-jasaPenyimpanan').html("hari");
+        }
+    }
+</script>
+<div class="modal fade" id="Modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ModalLabel"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body pb-0">
+                <div class="alert alert-dismissible fade d-none px-3 py-1 mb-0" role="alert" id="alert">
+                    <strong id="message"></strong>
+                    <button type="button" class="btn-close p-2" onclick="return closeAlert()"></button>
+                </div>
+            </div>
+            <div class="modal-body body-input">
+                <div class="row mb-3">
+                    <label class="col-2 form-label pt-2">Tipe Produk <small
+                            class="text-danger info-required"></small></label>
+                    <div class="col-10">
+                        <select name="tipeProduk" class="form-control" onchange="formatTipeProduk()">
+                            <option value="Konsinyasi Cicilan Tetap">Konsinyasi Cicilan Tetap</option>
+                            <option value="Konsinyasi Cicilan Fleksibel">Konsinyasi Cicilan Fleksibel</option>
+                        </select>
+                        <small class="text-danger p-0" id="info-tipeProduk"></small>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <label class="col-2 form-label">Produk Id <small class="text-danger info-required"></small></label>
+                    <div class="col-10">
+                        <input type="text" class="form-control" name="id" placeholder="Produk Id" maxlength="20" />
+                        <small class="text-danger p-0" id="info-id">*</small>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <label class="col-2 form-label">Nama Produk <small
+                            class="text-danger info-required"></small></label>
+                    <div class="col-10">
+                        <input class="form-control" type="text" name="namaProduk" placeholder="Nama Produk"
+                            maxlength="50" />
+                        <small class="text-danger p-0" id="info-namaProduk"></small>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <label class="col-2 form-label">Keterangan</label>
+                    <div class="col-10">
+                        <textarea class="form-control" name="keterangan" style="resize: none;"
+                            maxlength="255"></textarea>
+                        <small class="text-danger p-0" id="info-keterangan"></small>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <label class="col-2 form-label">LTV (%) <small class="text-danger info-required"></small></label>
+                    <div class="row col-10">
+                        <div class="col-2">
+                            <input type="text" class="form-control" name="ltv" maxlength="6"
+                                onkeyup="return formatLtv()">
+                        </div>
+                        <label class="col-10 form-label ps-0">% </label>
+                        <small class="text-danger p-0" id="info-ltv"></small>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <label class="col-2 form-label pe-0">Jangka Waktu <small
+                            class="text-danger info-required"></small></label>
+                    <div class="row col-10">
+                        <div class="col-2">
+                            <input type="text" class="form-control" name="jangkaWaktu" maxlength="3">
+                        </div>
+                        <label class="col-3 form-label ps-0 end-jangkaWaktu">bulan </label>
+                        <small class="text-danger p-0" id="info-jangkaWaktu"></small>
+                    </div>
+
+                </div>
+
+                <div class="row mb-3">
+                    <label class="col-3 form-label">Biaya Admin Buka <small
+                            class="text-danger info-required"></small></label>
+                    <div class="row col-9">
+                        <div class="col-3">
+                            <select name="adminBukaType" class="form-control" onchange="return formatAdminBukaType()">
+                                <option value="PERSEN">PERSEN</option>
+                                <option value="NOMINAL">NOMINAL</option>
+                            </select>
+                        </div>
+                        <div class="col-2 w-adminBuka">
+                            <input type="text" class="form-control" name="adminBuka" onkeyup="return formatAdminBuka()"
+                                maxlength="6">
+                        </div>
+                        <label class="col-2 form-label ps-0 end-adminBuka">% </label>
+                        <small class="text-danger p-0" id="info-adminBuka"></small>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <label class="col-3 form-label">Biaya Admin Tutup <small
+                            class="text-danger info-required"></small></label>
+                    <div class="row col-9">
+                        <div class="col-3">
+                            <select name="adminTutupType" class="form-control" onchange="return formatAdminTutupType()">
+                                <option value="PERSEN">PERSEN</option>
+                                <option value="NOMINAL">NOMINAL</option>
+                            </select>
+                        </div>
+                        <div class="col-2 w-adminTutup">
+                            <input type="text" class="form-control" name="adminTutup"
+                                onkeyup="return formatAdminTutup()" maxlength="6">
+                        </div>
+                        <label class="col-2 form-label ps-0 end-adminTutup">% </label>
+                        <small class="text-danger p-0" id="info-adminTutup"></small>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <label class="col-4 form-label">Biaya Jasa Penyimpanan <small
+                            class="text-danger info-required"></small></label>
+                    <div class="row col-8">
+                        <div class="col-2 ps-0">
+                            <input type="text" class="form-control" name="jasaPenyimpanan" maxlength="6"
+                                onkeyup="return formatJasaPenyimpanan()">
+                        </div>
+                        <label class="col-1 form-label px-0">% <span class="float-end">Per</span></label>
+                        <div class="col-2">
+                            <input type="text" class="form-control" name="jasaPenyimpananPeriode" maxlength="3"
+                                onkeyup="return formatJasaPenyimpananPeriode()">
+                        </div>
+                        <label class="col-3 form-label ps-0 end-jasaPenyimpanan">bulan</label>
+                        <small class="text-danger p-0" id="info-jasaPenyimpanan"></small>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <label class="col-4 form-label">Biaya Denda Keterlambatan <small
+                            class="text-danger info-required"></small></label>
+                    <div class="row col-8">
+                        <div class="col-2 ps-0">
+                            <input type="text" class="form-control" name="dendaKeterlambatan" maxlength="6"
+                                onkeyup="return formatDendaKeterlambatan()">
+                        </div>
+                        <label class="col-1 form-label px-0">% <span class="float-end">Per</span></label>
+                        <div class="col-2">
+                            <input type="text" class="form-control" name="dendaKeterlambatanPeriode" maxlength="3">
+                        </div>
+                        <label class="col-3 form-label ps-0">hari</label>
+                        <small class="text-danger p-0" id="info-dendaKeterlambatan"></small>
+                    </div>
+                </div>
+                <div class="row mb-3 body-detail">
+                    <label class="col-4 form-label">Tanggal Buat / Oleh</label>
+                    <div class="col-8">
+                        <input class="form-control" type="text" name="tanggalBuat" placeholder="Tanggal Buat / Oleh"
+                            readonly />
+                    </div>
+                </div>
+                <div class="row mb-3 body-detail">
+                    <label class="col-4 form-label">Tanggal Update Terakhir / Oleh</label>
+                    <div class="col-8">
+                        <input class="form-control" type="text" name="tanggalUpdate"
+                            placeholder="Tanggal Update Terakhir / Oleh" readonly />
+                    </div>
+                </div>
+            </div>
+            <div class="modal-body body-delete">
+                <div>
+                    <label class="form-label">Apakah Anda Yakin ingin menghapus data ini ( <b id="hapus_nama"></b>
+                        )?</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-kembali" data-bs-dismiss="modal">Kembali</button>
+                <button type="button" class="btn btn-danger btn-delete">Hapus</button>
+                <button type="button" id="ModalButton" class="btn btn-primary"></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</html>

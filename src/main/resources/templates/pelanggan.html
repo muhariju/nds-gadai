@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaft.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pengaturan Pelanggan</title>
+    <link rel="shortcut icon" href="https://cdn-icons-png.flaticon.com/512/622/622848.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css" rel="stylesheet"
+        crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa"
+        crossorigin="anonymous"></script>
+
+    <!-- Include Required Prerequisites -->
+    <script type="text/javascript" src="//cdn.jsdelivr.net/jquery/1/jquery.min.js"></script>
+
+    <!-- Datatable -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css" />
+    <script type="text/javascript" src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+
+    <style>
+        #ip {
+            display: flex;
+            margin-top: 20px;
+        }
+
+        .dataTables_paginate {
+            float: unset;
+        }
+
+        #info {
+            margin-left: auto;
+            padding: 10px;
+            padding-top: 13px;
+            min-height: 46px;
+        }
+
+        input:read-only,
+        textarea:read-only {
+            background-color: #eee;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    </nav>
+    <div class="container-fluid mt-3">
+        <div class="row">
+            <div class="col-12">
+                <h2 class="mb-4">Pengaturan Pelanggan</h2>
+                <div class="card col-12">
+                    <div class="card-header">
+                        <div class="float-start p-2">
+                            <b>Cari Data Pelanggan</b>
+                        </div>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row">
+                            <div class="col-lg-2 mb-2">
+                                <label class="py-2">Nomor KTP</label>
+                            </div>
+                            <div class="col-lg-5 mb-2">
+                                <input type="text" name="searchNomorKtp" class="form-control">
+                            </div>
+                            <div class="col-lg-2 text-end mb-2">
+                                <label class="py-2">Status</label>
+                            </div>
+                            <div class="col-lg-3 mb-2">
+                                <select name="searchRecStatus" class="form-control">
+                                    <option value=""></option>
+                                    <option value="A">Active</option>
+                                    <option value="N">Nonactive</option>
+                                </select>
+                            </div>
+
+                            <div class="col-lg-2 mb-2">
+                                <label class="py-2">Nama Pelanggan</label>
+                            </div>
+                            <div class="col-lg-5 mb-2">
+                                <input type="text" name="searchNamaPelanggan" class="form-control">
+                            </div>
+                            <div class="col-lg-2 text-end mb-2">
+                                <label class="py-2">Nomor HP</label>
+                            </div>
+                            <div class="col-lg-3 mb-2">
+                                <input type="text" name="searchNomorHp" class="form-control">
+                            </div>
+
+                            <div class="col-lg-2 mb-2">
+                                <label class="py-2">ID Customer</label>
+                            </div>
+                            <div class="col-lg-5 mb-2">
+                                <input type="text" name="searchId" class="form-control">
+                            </div>
+                            <div class="col-lg-2 text-end mb-2">
+                                <label class="py-2">Jenis Usaha</label>
+                            </div>
+                            <div class="col-lg-3 mb-2">
+                                <select name="searchJenisUsaha" class="form-control">
+                                    <option value=""></option>
+                                    <option th:each="jU: ${jenisUsaha}" th:value="${jU}" th:text="${jU}"></option>
+                                </select>
+                            </div>
+                            <div class="ms-auto col-lg-10 pt-2">
+                                <button class="btn btn-primary me-3" onclick="return searchAction()">
+                                    Cari
+                                </button>
+                                <button class="btn btn-primary mx-3" onclick="return emptyAction()">
+                                    Kosongkan
+                                </button>
+                                <button class="btn btn-primary mx-3" onclick="return add()">
+                                    Pelanggan Baru
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr />
+                <div class="table-responsive">
+                    <table class="table table-striped w-100" id="data-pelanggan">
+                        <thead>
+                            <tr class="bg-primary text-white">
+                                <th class="text-center">ID Customer</th>
+                                <th class="text-center">NO KTP</th>
+                                <th class="text-center">Nama Pelanggan</th>
+                                <th class="text-center">Jenis Usaha</th>
+                                <th class="text-center">Nomor HP</th>
+                                <th class="text-center">Status</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript">
+    var url = "doGetAllPelanggan";
+    var dataSearch = "";
+    $('nav').load('/fragments/nav');
+    view(url, dataSearch);
+
+    function closeAlert() {
+        $('#alert').addClass('d-none');
+    }
+    function btnKembali(status, onclick) {
+        if (status == true) {
+            $('.btn-kembali').removeAttr('data-bs-dismiss');
+            $('.btn-kembali').attr('onclick', 'return ' + onclick);
+        } else {
+            $('.btn-kembali').removeAttr('onclick');
+            $('.btn-kembali').attr('data-bs-dismiss', 'modal');
+        }
+    }
+    function clearForm() {
+        var todayDate = new Date().toISOString().slice(0, 10);
+        $('[name="id"]').val("");
+        $('[name="namaPelanggan"]').val("");
+        $('[name="nomorKtp"]').val("");
+        $('[name="nomorHp"]').val("");
+        $('[name="jenisKelamin"]').prop('checked', false);
+        $('[name="limitPinjaman"]').val("");
+        $('[name="tanggalBuat"]').val("");
+        $('[name="tanggalUpdate"]').val("");
+    }
+    function readonlyForm(readonly) {
+        $('[name="namaPelanggan"]').prop('readonly', readonly);
+        $('[name="nomorHp"]').prop('readonly', readonly);
+        $('[name="nomorKtp"]').prop('readonly', readonly);
+        $('[name="jenisKelamin"]').prop('disabled', readonly);
+        $('[name="jenisUsaha"]').prop('disabled', readonly);
+        $('[name="limitPinjaman"]').prop('readonly', readonly);
+    }
+    function removeInfo() {
+        $('#info-id').html('');
+        $('#info-namaPelanggan').html('');
+        $('#info-nomorKtp').html('');
+        $('#info-nomorHp').html('');
+        $('#info-jenisKelamin').html('');
+        $('#info-jenisUsaha').html('');
+        $('#info-limitPinjaman').html('');
+        $('.info-required').html('');
+    }
+    function addInfo() {
+        $('.info-required').html('*');
+    }
+    function alertInfo(obj) {
+        if (obj.id) { $('#info-id').html("* " + obj.id); }
+        if (obj.namaPelanggan) { $('#info-namaPelanggan').html("* " + obj.namaPelanggan); }
+        if (obj.nomorKtp) { $('#info-nomorKtp').html("* " + obj.nomorKtp); }
+        if (obj.nomorHp) { $('#info-nomorHp').html("* " + obj.nomorHp); }
+        if (obj.jenisKelamin) { $('#info-jenisKelamin').html("* " + obj.jenisKelamin); }
+        if (obj.jenisUsaha) { $('#info-jenisUsaha').html("* " + obj.jenisUsaha); }
+        if (obj.limitPinjaman) { $('#info-limitPinjaman').html("* " + obj.limitPinjaman); }
+    }
+    function searchAction() {
+        var id = $('[name="searchId"]').val();
+        var namaPelanggan = $('[name="searchNamaPelanggan"]').val();
+        var jenisUsaha = $('[name="searchJenisUsaha"]').val();
+        var recStatus = $('[name="searchRecStatus"]').val();
+        var nomorHp = $('[name="searchNomorHp"]').val();
+        var nomorKtp = $('[name="searchNomorKtp"]').val();
+        
+        id = { "name": "id", "value": id };
+        namaPelanggan = { "name": "namaPelanggan", "value": namaPelanggan };
+        jenisUsaha = { "name": "jenisUsaha", "value": jenisUsaha };
+        recStatus = { "name": "recStatus", "value": recStatus };
+        nomorHp = { "name": "nomorHp", "value": nomorHp };
+        nomorKtp = { "name": "nomorKtp", "value": nomorKtp };
+        dataSearch = [id, namaPelanggan, jenisUsaha, recStatus, nomorHp, nomorKtp]
+        url = "doSearchPelanggan";
+        view(url, dataSearch);
+    }
+    function emptyAction() {
+        $('[name="searchId"]').val("");
+        $('[name="searchNamaPelanggan"]').val("");
+        $('[name="searchjenisUsaha"]').val("");
+        $('[name="searchRecStatus"]').val("");
+        $('[name="searchNomorHp"]').val("");
+        $('[name="searchNomorKtp"]').val("");
+    }
+
+    function showDetailandAdd() {
+        removeInfo();
+        btnKembali(false, "");
+        $('.body-delete').hide();
+        $('.body-input').show();
+        $('#ModalButton').show();
+        $('#ModalButton').addClass('btn-primary');
+        $('#ModalButton').removeClass('btn-danger');
+        $('#alert').addClass('d-none');
+    }
+    function view(url, data) {
+        var table = $('#data-pelanggan').DataTable({
+            "bPaginate": true,
+            "bLengthChange": false,
+            "bFilter": false,
+            "bInfo": true,
+            "bAutoWidth": true,
+            "sAjaxSource": url,
+            "sAjaxDataProp": "data",
+            "fnServerParams": function (aoData) {
+                if (data) { aoData.push(data[0], data[1], data[2], data[3], data[4], data[5]); }
+            },
+            "aoColumns": [
+                { "mData": "id" },
+                { "mData": "nomorKtp" },
+                { "mData": "namaPelanggan" },
+                { "mData": "jenisUsaha" },
+                {
+                    "mData": "recStatus",
+                    className: 'text-center',
+                    render: function (data) {
+                        if (data == "A") { data = "Active"; }
+                        if (data == "N") { data = "Nonactive"; }
+                        return data;
+                    }
+                },
+                {
+                    "mData": "id",
+                    className: 'text-center',
+                    render: function (data) {
+                        data = '<button onclick="return detail(' + data + ')" class="btn btn-sm btn-primary">DETAIL</button>';
+                        return data;
+                    }
+                }
+            ],
+            dom: '<bottom><"#ip" <"#info">p>',
+            language: {
+                paginate: {
+                    next: '<i class="fa-solid fa-angle-right"></i>',
+                    previous: '<i class="fa-solid fa-angle-left"></i>'
+                }
+            },
+            stateSave: true,
+            "bDestroy": true
+        });
+        setTimeout(function () {
+            var info = table.page.info();
+            if (info) {
+                $('#info').html('Halaman <span id="halaman">' + (info.page + 1) + '</span> dari ' + info.pages);
+            }
+        }, 500);
+    }
+    function add() {
+        showDetailandAdd();
+        addInfo();
+        clearForm();
+        readonlyForm(false);
+
+        $('#Modal').modal('show');
+        $('.body-detail').hide();
+        $('.btn-delete').hide();
+        $('#ModalLabel').html('Pengaturan Pelanggan - Baru');
+        $('#ModalButton').html('Simpan');
+        $('#ModalButton').attr('onclick', 'return addAction()');
+    }
+    function clearFormData(){
+        clearForm();
+        $('#ModalButton').html('Simpan');
+        $('#ModalButton').attr('onclick', 'return addAction()');
+        $('#alert').addClass('d-none');
+    }
+    function addAction() {
+        var namaPelanggan = $('[name="namaPelanggan"]').val();
+        var nomorKtp = $('[name="nomorKtp"]').val();
+        var nomorHp = $('[name="nomorHp"]').val();
+        var jenisKelamin = $('[name="jenisKelamin"]:checked').val();
+        var jenisUsaha = $('[name="jenisUsaha"]').find(":selected").val();
+        var limitPinjaman = $('[name="limitPinjaman"]').val().replaceAll('.', '');
+        var data = { namaPelanggan: namaPelanggan, nomorHp: nomorHp, nomorKtp: nomorKtp, jenisKelamin: jenisKelamin, jenisUsaha: jenisUsaha, limitPinjaman: limitPinjaman }
+
+        removeInfo();
+        addInfo();
+
+        $.ajax({
+            type: "POST",
+            data: JSON.stringify(data),
+            contentType: 'application/json',
+            dataType: 'json',
+            url: "doInsert",
+            success: function (response) {
+                view(url, "");
+                $('#alert').removeClass('d-none');
+                $('#alert').removeClass('alert-danger');
+                $('#alert').removeClass('alert-primary');
+                $('#alert').addClass('show alert-success');
+                $('#message').html(response.msg);
+                emptyAction();
+                $('[name="id"]').val(response.data.id);
+                $('#ModalButton').html('Tambah Baru');
+                $('#ModalButton').attr('onclick', 'return clearFormData()');
+            },
+            error: function (xhr, status, error) {
+                var obj = JSON.parse(xhr.responseText);
+                alertInfo(obj);
+            }
+        })
+    }
+    function getDetail(id) {
+        showDetailandAdd();
+        readonlyForm(true);
+
+        $('.body-detail').show();
+        $('.btn-delete').show();
+        $('#ModalLabel').html('Pengaturan Pelanggan - Detail');
+        $('#ModalButton').html('Ubah');
+        $('#ModalButton').attr('onclick', 'return update("' + id + '")');
+
+        $.ajax({
+            type: "GET",
+            contentType: 'application/json',
+            dataType: 'json',
+            url: "doGetDetailPelanggan/" + id,
+            success: function (response) {
+                $('[name="id"]').val(response.data.id);
+                $('[name="namaPelanggan"]').val(response.data.namaPelanggan);
+                $('[name="nomorKtp"]').val(response.data.nomorKtp);
+                $('[name="nomorHp"]').val(response.data.nomorHp);
+                $('[name="jenisKelamin"][value="'+response.data.jenisKelamin+'"]').prop('checked', true);
+                $('[name="jenisUsaha"]').val(response.data.jenisUsaha);
+                $('[name="limitPinjaman"]').val(response.data.limitPinjaman);
+                $('[name="tanggalBuat"]').val(response.data.creatorId + " - Nama User / " + response.data.createdDate);
+                $('[name="tanggalUpdate"]').val("-");
+                if (response.data.updatedDate) {
+                    $('[name="tanggalUpdate"]').val(response.data.updaterId + " - Nama User / " + response.data.updatedDate);
+                }
+                $('.btn-delete').attr('onclick', 'return remove("' + id + '","' + response.data.namaPelanggan + '")');
+                if (response.data.recStatus == "N") {
+                    $('.btn-delete').hide();
+                    $('#ModalButton').hide();
+                }
+            },
+            error: function (xhr, status, error) {
+                var obj = JSON.parse(xhr.responseText);
+                $('#alert').removeClass('d-none');
+                $('#alert').addClass('show alert-danger');
+                $('#alert').removeClass('alert-primary');
+                $('#alert').removeClass('alert-success');
+                $('#message').html(obj.msg);
+            }
+        })
+    }
+    function detail(id) {
+        $('#Modal').modal('show');
+        getDetail(id);
+    }
+    function update(id) {
+        removeInfo();
+        addInfo();
+        readonlyForm(false);
+        btnKembali(true, 'getDetail("' + id + '")');
+        $('[name="id"]').prop('readonly', true);
+        $('.btn-delete').hide();
+        $('#ModalLabel').html('Pengaturan Pelanggan - Ubah');
+        $('#ModalButton').html('Simpan');
+        $('#ModalButton').attr('onclick', 'return updateAction(' + id + ')');
+    }
+    function updateAction(id) {
+        var namaPelanggan = $('[name="namaPelanggan"]').val();
+        var nomorKtp = $('[name="nomorKtp"]').val();
+        var nomorHp = $('[name="nomorHp"]').val();
+        var jenisKelamin = $('[name="jenisKelamin"]:checked').val();
+        var jenisUsaha = $('[name="jenisUsaha"]').find(":selected").val();
+        var limitPinjaman = $('[name="limitPinjaman"]').val().replaceAll('.', '');
+        var data = { id: id, namaPelanggan: namaPelanggan, nomorHp: nomorHp, nomorKtp: nomorKtp, jenisKelamin: jenisKelamin, jenisUsaha: jenisUsaha, limitPinjaman: limitPinjaman }
+
+        removeInfo();
+        addInfo();
+
+        $.ajax({
+            type: "PUT",
+            data: JSON.stringify(data),
+            contentType: 'application/json',
+            dataType: 'json',
+            url: "doUpdate",
+            success: function (response) {
+                view(url, "");
+                getDetail(id);
+                $('#alert').removeClass('d-none');
+                $('#alert').removeClass('alert-danger');
+                $('#alert').addClass('show alert-info');
+                $('#alert').removeClass('alert-success');
+                $('#message').html(response.msg);
+                emptyAction();
+            },
+            error: function (xhr, status, error) {
+                var obj = JSON.parse(xhr.responseText);
+                alertInfo(obj);
+            }
+        })
+    }
+    function remove(id, nama) {
+        btnKembali(true, 'getDetail("' + id + '")');
+
+        $('#Modal').modal('show');
+        $('.body-input').hide();
+        $('.body-delete').show();
+        $('.btn-delete').hide();
+        $('#ModalLabel').html('Pengaturan Pelanggan - Hapus');
+        $('#ModalButton').html('Hapus');
+        $('#ModalButton').attr('onclick', 'return removeAction(' + id + ')');
+        $('#ModalButton').removeClass('btn-primary');
+        $('#ModalButton').addClass('btn-danger');
+
+        $('#hapus_nama').html(nama);
+    }
+    function removeAction(id) {
+        $.ajax({
+            type: "DELETE",
+            data: JSON.stringify({ id: id }),
+            contentType: 'application/json',
+            dataType: 'json',
+            url: "doDelete",
+            success: function (response) {
+                view(url, "");
+                $('#alert').removeClass('d-none');
+                $('#alert').removeClass('alert-success');
+                $('#alert').removeClass('alert-primary');
+                $('#alert').addClass('show alert-danger');
+                $('#message').html(response.msg);
+                emptyAction();
+                setTimeout(function () {
+                    $('#Modal').modal('hide');
+                }, 1000);
+            }
+        })
+    }
+    (function ($) {
+        $.fn.inputFilter = function (callback, errMsg) {
+            return this.on("input keydown keyup mousedown mouseup select contextmenu drop focusout", function (e) {
+                if (callback(this.value)) {
+                    // Accepted value
+                    if (["keydown", "mousedown", "focusout"].indexOf(e.type) >= 0) {
+                        $(this).removeClass("input-error");
+                        this.setCustomValidity("");
+                    }
+                    this.oldValue = this.value;
+                    this.oldSelectionStart = this.selectionStart;
+                    this.oldSelectionEnd = this.selectionEnd;
+                } else if (this.hasOwnProperty("oldValue")) {
+                    // Rejected value - restore the previous one
+                    $(this).addClass("input-error");
+                    this.setCustomValidity(errMsg);
+                    this.reportValidity();
+                    this.value = this.oldValue;
+                    this.setSelectionRange(this.oldSelectionStart, this.oldSelectionEnd);
+                } else {
+                    // Rejected value - nothing to restore
+                    this.value = "";
+                }
+            });
+        };
+    }(jQuery));
+    $(document).ready(function () {
+        $('[name="searchNomorHp"]').inputFilter(function (value) {
+            return /^\d*$/.test(value);
+        }, "Only number allowed");
+        $('[name="nomorHp"]').inputFilter(function (value) {
+            return /^\d*$/.test(value);
+        }, "Only number allowed");
+        
+        $('[name="searchNomorKtp"]').inputFilter(function (value) {
+            return /^\d*$/.test(value);
+        }, "Only number allowed");
+        $('[name="nomorKtp"]').inputFilter(function (value) {
+            return /^\d*$/.test(value);
+        }, "Only number allowed");
+        $('[name="limitPinjaman"]').inputFilter(function (value) {
+            return /^(\d|\,|\.)*$/.test(value);
+        }, "Only number allowed");
+        $(document).on("click", ".paginate_button", function () {
+            var pageclick = $('.paginate_button.current').html();
+            $('#halaman').html(pageclick);
+        });
+    });
+
+    function number_format(num) {
+        return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+    }
+    function formatDate(date) {
+        var d = new Date(date),
+            month = '' + (d.getMonth() + 1),
+            day = '' + d.getDate(),
+            year = d.getFullYear();
+
+        if (month.length < 2)
+            month = '0' + month;
+        if (day.length < 2)
+            day = '0' + day;
+
+        return [day, month, year].join('-');
+    }
+    function formatLimitPinjaman() {
+        var value = $('[name="limitPinjaman"]').val();
+        value = value.replaceAll('.', '');
+        if (value.match(/^.*\,.*$/)) {
+            end = value.substr(value.indexOf(','), 3);
+            value = value.substr(0, value.indexOf(','));
+            value = value + end;
+        }else if(value.length > 17){
+            value = value.substr(0, 17)+","+value.substr(17, value.length);
+        }
+        $('[name="limitPinjaman"]').val(number_format(value));
+    }
+</script>
+<div class="modal fade" id="Modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ModalLabel"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body pb-0">
+                <div class="alert alert-dismissible fade d-none px-3 py-1 mb-0" role="alert" id="alert">
+                    <strong id="message"></strong>
+                    <button type="button" class="btn-close p-2" onclick="return closeAlert()"></button>
+                </div>
+            </div>
+            <div class="modal-body body-input">
+                <div class="row mb-3">
+                    <label class="col-4 form-label">ID Customer <span class="text-danger info-required"></span></label>
+                    <div class="col-8">
+                        <input type="text" class="form-control" name="id" placeholder="ID Customer" readonly />
+                        <small class="text-danger" id="info-id"></small>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <label class="col-4 form-label">Nama Pelanggan <span
+                            class="text-danger info-required">*</span></label>
+                    <div class="col-8">
+                        <input type="text" class="form-control" name="namaPelanggan" placeholder="Nama Pelanggan" maxlength="30"/>
+                        <small class="text-danger" id="info-namaPelanggan"></small>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <label class="col-4 form-label">Nomor KTP <span class="text-danger info-required"></span></label>
+                    <div class="col-8">
+                        <input class="form-control" type="text" name="nomorKtp" placeholder="Nomor KTP"
+                            maxlength="16" />
+                        <small class="text-danger" id="info-nomorKtp"></small>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <label class="col-4 form-label">Nomor HP <span class="text-danger"></span></label>
+                    <div class="col-8">
+                        <input class="form-control" type="text" name="nomorHp" placeholder="Nomor HP" maxlength="12"/>
+                        <small class="text-danger" id="info-nomorHp"></small>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <label class="col-4 form-label">Jenis Kelamin <span
+                            class="text-danger info-required"></span></label>
+                    <div class="col-8">
+                        <input type="radio" name="jenisKelamin" value="L"
+                            class="me-2" /><span><small>Laki-laki</small></span>
+                        <input type="radio" name="jenisKelamin" value="P"
+                            class="ms-3 me-2" /><span><small>Perempuan</small></span>
+                        <br>
+                        <small class="text-danger" id="info-jenisKelamin"></small>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <label class="col-4 form-label">Jenis Usaha <span class="text-danger info-required"></span></label>
+                    <div class="col-8">
+                        <select name="jenisUsaha" class="form-control">
+                            <option value=""></option>
+                            <option th:each="jU: ${jenisUsaha}" th:value="${jU}" th:text="${jU}"></option>
+                        </select>
+                        <small class="text-danger" id="info-jenisUsaha"></small>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <label class="col-4 form-label">Maksimal Limit Pinjaman <span
+                            class="text-danger info-required"></span></label>
+                    <div class="col-8">
+                        <input type="text" class="form-control" name="limitPinjaman" onkeyup="formatLimitPinjaman()"
+                            placeholder="Maksimal Limit Pinjaman" maxlength="25">
+                        <small class="text-danger" id="info-limitPinjaman"></small>
+                    </div>
+                </div>
+                <div class="row mb-3 body-detail">
+                    <label class="col-4 form-label">Tanggal Buat / Oleh</label>
+                    <div class="col-8">
+                        <input class="form-control" type="text" name="tanggalBuat" placeholder="Tanggal Buat / Oleh"
+                            readonly />
+                    </div>
+                </div>
+                <div class="row mb-3 body-detail">
+                    <label class="col-4 form-label">Tanggal Update Terakhir / Oleh</label>
+                    <div class="col-8">
+                        <input class="form-control" type="text" name="tanggalUpdate"
+                        placeholder="Tanggal Update Terakhir / Oleh" readonly />
+                    </div>
+                </div>
+            </div>
+            <div class="modal-body body-delete">
+                <div>
+                    <label class="form-label">Apakah Anda Yakin ingin menghapus data ini ( <b id="hapus_nama"></b>
+                        )?</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-kembali" data-bs-dismiss="modal">Kembali</button>
+                <button type="button" class="btn btn-danger btn-delete">Hapus</button>
+                <button type="button" id="ModalButton" class="btn btn-primary"></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</html>

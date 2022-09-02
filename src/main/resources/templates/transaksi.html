@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaft.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaksi Cicilan Tetap</title>
+    <link rel="shortcut icon" href="https://cdn-icons-png.flaticon.com/512/622/622848.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css" rel="stylesheet"
+        crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa"
+        crossorigin="anonymous"></script>
+
+    <!-- Include Required Prerequisites -->
+    <script type="text/javascript" src="//cdn.jsdelivr.net/jquery/1/jquery.min.js"></script>
+    <script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+
+    <!-- Datatable -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css" />
+    <script type="text/javascript" src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+
+    <style>
+        #ip {
+            display: flex;
+            margin-top: 20px;
+        }
+
+        .dataTables_paginate {
+            float: unset;
+        }
+
+        #info {
+            margin-left: auto;
+            padding: 10px;
+            padding-top: 13px;
+            min-height: 46px;
+        }
+
+        input:read-only,
+        textarea:read-only {
+            background-color: #eee;
+        }
+
+        .dataList {
+            width: 100%;
+            border: none;
+            background-color: #fff;
+            text-align: left;
+        }
+
+        .dataList:focus,
+        .dataListOn {
+            background-color: #eee;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    </nav>
+    <div class="container-fluid mt-3">
+        <div class="row" id="add-form" style="display: none;">
+            <div class="col-12">
+                <h2 class="mb-4">Transaksi Cicilan Tetap - Transaksi Baru</h2>
+                <div class="col-12">
+                    <div class="alert alert-dismissible fade d-none px-3 py-1 mb-0 mb-3" role="alert" id="alert">
+                        <strong id="message"></strong>
+                        <button type="button" class="btn-close p-2" onclick="return closeAlert()"></button>
+                    </div>
+                </div>
+                <div class="card col-12">
+                    <div class="card-body p-4 pb-0">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <label><b>Cari Data Pelanggan</b></label>
+                                <div class="row mt-4 pt-1">
+                                    <div class="col-3">
+                                        <label>ID Pelanggan</label>
+                                    </div>
+                                    <div class="col-8 mb-2">
+                                        <input type="text" name="searchPId" class="form-control">
+                                    </div>
+                                    <div class="col-3">
+                                        <label>Nama Pelanggan</label>
+                                    </div>
+                                    <div class="col-8 mb-2">
+                                        <input type="text" name="searchPNamaPelanggan" class="form-control">
+                                    </div>
+                                    <div class="col-3">
+                                        <label>Nomor KTP</label>
+                                    </div>
+                                    <div class="col-8 mb-2">
+                                        <input type="text" name="searchPNomorKtp" class="form-control">
+                                    </div>
+                                    <div class="col-3">
+                                        <label>Nomor HP</label>
+                                    </div>
+                                    <div class="col-8 mb-2">
+                                        <input type="text" name="searchPNomorHp" class="form-control">
+                                    </div>
+                                    <div class="col-11 pt-2 text-end">
+                                        <button class="btn btn-primary btn-sm px-4 mb-5"
+                                            onclick="return searchActionPelanggan()">
+                                            Cari
+                                        </button>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="col-lg-6">
+                                <label><b>Hasil Pencarian</b></label><br>
+                                <label>(Id Pelanggan - noKTP - noTelp - nama Pelanggan )</label>
+                                <div class="border rounded p-2 mt-1 h-75" id="SearchResultP">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card col-12 mt-3">
+                    <div class="card-body p-4">
+                        <div class="row">
+                            <label class="col-12 mb-3"><b>Informasi Transaksi</b></label>
+                            <div class="col-lg-6">
+                                <div class="row">
+                                    <div class="col-3">
+                                        <label>Pelanggan <span class="text-danger">*</span></label>
+                                    </div>
+                                    <div class="col-8 mb-2">
+                                        <input type="text" name="idPelanggan" class="form-control" readonly>
+                                        <small class="text-danger" id="info-idPelanggan"></small>
+                                    </div>
+                                    <div class="col-3">
+                                        <label>Tgl Transaksi</label>
+                                    </div>
+                                    <div class="col-8 mb-2">
+                                        <input type="date" name="tglTransaksi" class="form-control"
+                                            th:value="${#calendars.format(#calendars.createNow(), 'yyyy-MM-dd')}"
+                                            readonly>
+                                    </div>
+                                    <div class="col-3">
+                                        <label>Nomor Transaksi</label>
+                                    </div>
+                                    <div class="col-8 mb-2">
+                                        <input type="text" name="nomorTransaksi" class="form-control" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="row">
+                                    <div class="col-3 pe-0">
+                                        <label>Produk Transaksi <span class="text-danger">*</span></label>
+                                    </div>
+                                    <div class="col-8 mb-2">
+                                        <select name="produkTransaksi" class="form-control"
+                                            onchange="return getDetailProduk()">
+                                            <option value=""></option>
+                                            <option th:each="pCT: ${produkCicilanTetap}" th:value="${pCT['id']}"
+                                                th:text="${pCT['id']}"></option>
+                                        </select>
+                                        <small class="text-danger" id="info-produkTransaksi"></small>
+                                    </div>
+                                    <div class="col-3">
+                                        <label>Nama Produk</label>
+                                    </div>
+                                    <div class="col-8 mb-2">
+                                        <input type="text" name="namaProdukTransaksi" class="form-control" readonly>
+                                    </div>
+                                    <div class="col-3">
+                                        <label>Keterangan Produk</label>
+                                    </div>
+                                    <div class="col-8 mb-2">
+                                        <textarea class="form-control" name="keteranganProdukTransaksi"
+                                            style="resize: none;" maxlength="255" readonly></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card col-12 mt-3">
+                    <div class="card-body p-4">
+                        <div class="row mb-5 ">
+                            <label class="col-12 mb-3"><b>Daftar Barang Gadai <span
+                                        class="text-danger">*</span></b></label>
+                            <div class="col-lg-3">
+                                <label>Nama Barang</label>
+                                <input type="text" name="namaBarangGadai" class="form-control" maxlength="30">
+                                <small class="text-danger" id="info-namaBarangGadai"></small>
+                            </div>
+                            <div class="col-lg-3">
+                                <label>Deskripsi</label>
+                                <textarea name="deskripsiBarangGadai" class="form-control" style="resize: none;"
+                                    maxlength="150"></textarea>
+                                <small class="text-danger" id="info-deskripsiBarangGadai"></small>
+                            </div>
+                            <div class="col-lg-2">
+                                <label>Jumlah</label>
+                                <input type="text" name="jumlahBarangGadai" class="form-control text-end" maxlength="3">
+                                <small class="text-danger" id="info-jumlahBarangGadai"></small>
+                            </div>
+                            <div class="col-lg-2">
+                                <label>Harga Per Satuan</label>
+                                <input type="text" name="hargaBarangGadai" class="form-control text-end" maxlength="16"
+                                    onkeyup="return formatHargaBarangGadai()">
+                                <small class="text-danger" id="info-hargaBarangGadai"></small>
+                            </div>
+                            <div class="col-lg-2">
+                                <button class="btn btn-primary btn-sm px-5 mt-4 py-2"
+                                    onclick="return addBarangGadai()"><i class="fa-solid fa-plus"></i></button>
+                            </div>
+                        </div>
+                        <small class="text-danger" id="info-daftarBarangGadai"></small>
+                        <table class="table table-striped table-bordered">
+                            <thead>
+                                <tr class="bg-primary text-white">
+                                    <th class="text-center">No</th>
+                                    <th class="text-center">Nama Barang</th>
+                                    <th class="text-center">Kondisi</th>
+                                    <th class="text-center">Jlh Barang</th>
+                                    <th class="text-center">Harga Per satuan</th>
+                                    <th class="text-center">Total</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="dataBarangGadai">
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card col-12 mt-3">
+                    <div class="card-body p-4">
+                        <div class="row">
+                            <label class="col-12 mb-3"><b>Data Kontrak</b></label>
+                            <div class="col-lg-6">
+                                <div class="row">
+                                    <div class="col-5 pe-0">
+                                        <label>Total Nilai Taksiran</label>
+                                    </div>
+                                    <div class="col-7 mb-2">
+                                        <input type="text" name="totalNilaiTaksiran" class="form-control text-end"
+                                            readonly>
+                                    </div>
+                                    <div class="col-5 pe-0">
+                                        <label>LTV %</label>
+                                    </div>
+                                    <div class="col-3 mb-2">
+                                        <input type="text" name="ltv" class="form-control text-end" readonly>
+                                    </div>
+                                    <div class="col-4"></div>
+                                    <div class="col-5 pe-0">
+                                        <label>Maksimal Nilai Pinjaman</label>
+                                    </div>
+                                    <div class="col-7 mb-2">
+                                        <input type="text" name="maksimalNilaiPinjaman" class="form-control text-end"
+                                            readonly>
+                                    </div>
+                                    <div class="col-5 pe-0">
+                                        <label>Nilai Pencairan Pelanggan <span class="text-danger">*</span></label>
+                                    </div>
+                                    <div class="col-7 mb-2">
+                                        <input type="text" name="nilaiPencairanPelanggan" class="form-control text-end"
+                                            onkeyup="return FormatNilaiPencairanPelanggan()">
+                                        <small class="text-danger" id="info-nilaiPencairanPelanggan"></small>
+                                    </div>
+                                    <div class="col-5 pe-0">
+                                        <label>Biaya Admin Buka</label>
+                                    </div>
+                                    <div class="col-7 mb-2">
+                                        <input type="text" name="biayaAdminBuka" class="form-control text-end" readonly>
+                                    </div>
+                                    <div class="col-5 pe-0">
+                                        <label>Diskon Adm. Buka <span class="text-danger">*</span></label>
+                                    </div>
+                                    <div class="row col-7 mb-2">
+                                        <div class="col-5">
+                                            <input type="text" name="diskonAdmBuka" class="form-control text-end"
+                                                onkeyup="return FormatDiskonAdmBuka()" maxlength="6">
+                                        </div>
+                                        <div class="col-7 ps-0">%</div><br>
+                                        <small class="text-danger" id="info-diskonAdmBuka"></small>
+                                    </div>
+                                    <div class="col-5 pe-0">
+                                        <label>Biaya Admin Buka Akhir</label>
+                                    </div>
+                                    <div class="col-7 mb-2">
+                                        <input type="text" name="biayaAdminBukaAkhir" class="form-control text-end"
+                                            readonly>
+                                    </div>
+                                    <div class="col-5 pe-0">
+                                        <label>Total Nilai Pinjaman</label>
+                                    </div>
+                                    <div class="col-7 mb-2">
+                                        <input type="text" name="totalNilaiPinjaman" class="form-control text-end"
+                                            readonly>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="row">
+                                    <div class="col-3 pe-0">
+                                        <label>Tanggal Transaksi</label>
+                                    </div>
+                                    <div class="col-9 mb-2">
+                                        <input type="date" name="tanggalTransaksi" class="form-control" readonly>
+                                    </div>
+                                    <div class="col-3 pe-0">
+                                        <label>Tgl Jatuh Tempo</label>
+                                    </div>
+                                    <div class="col-9 mb-2">
+                                        <input type="date" name="tglJatuhTempo" class="form-control" readonly>
+                                    </div>
+                                    <div class="col-6 pe-0">
+                                        <label>Biaya Jasa Penyimpanan</label>
+                                    </div>
+                                    <div class="col-2 ps-0 mb-2">
+                                        <input type="text" class="form-control text-end" name="jasaPenyimpanan"
+                                            readonly>
+                                    </div>
+                                    <label class="col-1 form-label px-0">% <span
+                                            class="float-end text-end">Per</span></label>
+                                    <div class="col-2">
+                                        <input type="text" class="form-control text-end" name="jasaPenyimpananPeriode"
+                                            readonly>
+                                    </div>
+                                    <label class="col-1 form-label px-0 end-jasaPenyimpanan">bulan</label>
+                                    <div class="col-6 pe-0">
+                                        <label>Biaya Jasa Penyimpanan / Periode</label>
+                                    </div>
+                                    <div class="col-6 mb-2 ps-0">
+                                        <input type="text" name="biayaJasaPenyimpananPerPeriode"
+                                            class="form-control text-end" readonly>
+                                    </div>
+                                    <div class="col-6 pe-0">
+                                        <label>Total Biaya Jasa Penyimpanan</label>
+                                    </div>
+                                    <div class="col-6 mb-2 ps-0">
+                                        <input type="text" name="totalBiayaJasaPenyimpanan"
+                                            class="form-control text-end" readonly>
+                                    </div>
+                                    <div class="col-6 pe-0">
+                                        <label>Biaya Admin Tutup</label>
+                                    </div>
+                                    <div class="col-6 mb-2 ps-0">
+                                        <input type="text" name="biayaAdminTutup" class="form-control text-end"
+                                            readonly>
+                                    </div>
+                                    <div class="col-6 pe-0">
+                                        <label>Total Pengembalian</label>
+                                    </div>
+                                    <div class="col-6 mb-2 ps-0">
+                                        <input type="text" name="totalPengembalian" class="form-control text-end"
+                                            readonly>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 text-end py-4">
+                    <button type="button" class="btn btn-secondary btn-kembali me-3 px-5"
+                        onclick="return btnKembali()">Kembali</button>
+                    <button type="button" class="btn btn-success text-white me-3 px-5"
+                        onclick="return hitung()">Hitung</button>
+                    <button type="button" class="btn btn-primary px-5" id="simpan"
+                        onclick="return addAction()">Simpan</button>
+                </div>
+            </div>
+        </div>
+        <div class="row" id="detail-form" style="display: none;">
+            <div class="col-12">
+                <h2 class="mb-4">Transaksi Cicilan Tetap - Detail Transaksi</h2>
+                <div class="col-12">
+                    <div class="alert alert-dismissible fade d-none px-3 py-1 mb-0 mb-3" role="alert" id="alert">
+                        <strong id="message"></strong>
+                        <button type="button" class="btn-close p-2" onclick="return closeAlert()"></button>
+                    </div>
+                </div>
+                <div class="card col-12 mt-3">
+                    <div class="card-body p-4">
+                        <div class="row">
+                            <label class="col-12 mb-3"><b>Informasi Transaksi</b></label>
+                            <div class="col-lg-6">
+                                <div class="row">
+                                    <div class="col-3">
+                                        <label>Pelanggan <span class="text-danger">*</span></label>
+                                    </div>
+                                    <div class="col-8 mb-2">
+                                        <input type="text" name="detailIdPelanggan" class="form-control" readonly>
+                                        <small class="text-danger" id="info-idPelanggan"></small>
+                                    </div>
+                                    <div class="col-3">
+                                        <label>Tgl Transaksi</label>
+                                    </div>
+                                    <div class="col-8 mb-2">
+                                        <input type="date" name="detailTglTransaksi" class="form-control" readonly>
+                                    </div>
+                                    <div class="col-3">
+                                        <label>Nomor Transaksi</label>
+                                    </div>
+                                    <div class="col-8 mb-2">
+                                        <input type="text" name="detailNomorTransaksi" class="form-control" readonly>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="row">
+                                    <div class="col-3 pe-0">
+                                        <label>Produk Transaksi <span class="text-danger">*</span></label>
+                                    </div>
+                                    <div class="col-8 mb-2">
+                                        <input type="text" name="detailProdukTransaksi" class="form-control" readonly>
+                                    </div>
+                                    <div class="col-3">
+                                        <label>Nama Produk</label>
+                                    </div>
+                                    <div class="col-8 mb-2">
+                                        <input type="text" name="detailNamaProdukTransaksi" class="form-control"
+                                            readonly>
+                                    </div>
+                                    <div class="col-3">
+                                        <label>Keterangan Produk</label>
+                                    </div>
+                                    <div class="col-8 mb-2">
+                                        <textarea class="form-control" name="detailKeteranganProdukTransaksi"
+                                            style="resize: none;" maxlength="255" readonly></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card col-12 mt-3">
+                    <div class="card-body p-4">
+                        <div class="row mb-5 ">
+                            <label class="col-12 mb-3"><b>Daftar Barang Gadai <span
+                                        class="text-danger">*</span></b></label>
+                        </div>
+                        <small class="text-danger" id="info-daftarBarangGadai"></small>
+                        <table class="table table-striped table-bordered">
+                            <thead>
+                                <tr class="bg-primary text-white">
+                                    <th class="text-center">No</th>
+                                    <th class="text-center">Nama Barang</th>
+                                    <th class="text-center">Kondisi</th>
+                                    <th class="text-center">Jlh Barang</th>
+                                    <th class="text-center">Harga Per satuan</th>
+                                    <th class="text-center">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody id="detailDataBarangGadai">
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card col-12 mt-3">
+                    <div class="card-body p-4">
+                        <div class="row">
+                            <label class="col-12 mb-3"><b>Data Kontrak</b></label>
+                            <div class="col-lg-6">
+                                <div class="row">
+                                    <div class="col-5 pe-0">
+                                        <label>Total Nilai Taksiran</label>
+                                    </div>
+                                    <div class="col-7 mb-2">
+                                        <input type="text" name="detailTotalNilaiTaksiran" class="form-control text-end"
+                                            readonly>
+                                    </div>
+                                    <div class="col-5 pe-0">
+                                        <label>LTV %</label>
+                                    </div>
+                                    <div class="col-3 mb-2">
+                                        <input type="text" name="detailLtv" class="form-control text-end" readonly>
+                                    </div>
+                                    <div class="col-4"></div>
+                                    <div class="col-5 pe-0">
+                                        <label>Maksimal Nilai Pinjaman</label>
+                                    </div>
+                                    <div class="col-7 mb-2">
+                                        <input type="text" name="detailMaksimalNilaiPinjaman"
+                                            class="form-control text-end" readonly>
+                                    </div>
+                                    <div class="col-5 pe-0">
+                                        <label>Nilai Pencairan Pelanggan <span class="text-danger">*</span></label>
+                                    </div>
+                                    <div class="col-7 mb-2">
+                                        <input type="text" name="detailNilaiPencairanPelanggan"
+                                            class="form-control text-end"
+                                            onkeyup="return FormatNilaiPencairanPelanggan()" readonly>
+                                    </div>
+                                    <div class="col-5 pe-0">
+                                        <label>Biaya Admin Buka</label>
+                                    </div>
+                                    <div class="col-7 mb-2">
+                                        <input type="text" name="detailBiayaAdminBuka" class="form-control text-end"
+                                            readonly>
+                                    </div>
+                                    <div class="col-5 pe-0">
+                                        <label>Diskon Adm. Buka <span class="text-danger">*</span></label>
+                                    </div>
+                                    <div class="row col-7 mb-2">
+                                        <div class="col-5">
+                                            <input type="text" name="detailDiskonAdmBuka" class="form-control text-end"
+                                                onkeyup="return FormatDiskonAdmBuka()" maxlength="6" readonly>
+                                        </div>
+                                        <div class="col-7 ps-0">%</div><br>
+                                    </div>
+                                    <div class="col-5 pe-0">
+                                        <label>Biaya Admin Buka Akhir</label>
+                                    </div>
+                                    <div class="col-7 mb-2">
+                                        <input type="text" name="detailBiayaAdminBukaAkhir"
+                                            class="form-control text-end" readonly>
+                                    </div>
+                                    <div class="col-5 pe-0">
+                                        <label>Total Nilai Pinjaman</label>
+                                    </div>
+                                    <div class="col-7 mb-2">
+                                        <input type="text" name="detailTotalNilaiPinjaman" class="form-control text-end"
+                                            readonly>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="row">
+                                    <div class="col-3 pe-0">
+                                        <label>Tanggal Transaksi</label>
+                                    </div>
+                                    <div class="col-9 mb-2">
+                                        <input type="date" name="detailTanggalTransaksi" class="form-control" readonly>
+                                    </div>
+                                    <div class="col-3 pe-0">
+                                        <label>Tgl Jatuh Tempo</label>
+                                    </div>
+                                    <div class="col-9 mb-2">
+                                        <input type="date" name="detailTglJatuhTempo" class="form-control" readonly>
+                                    </div>
+                                    <div class="col-6 pe-0">
+                                        <label>Biaya Jasa Penyimpanan</label>
+                                    </div>
+                                    <div class="col-2 ps-0 mb-2">
+                                        <input type="text" class="form-control text-end" name="detailJasaPenyimpanan"
+                                            readonly>
+                                    </div>
+                                    <label class="col-1 form-label px-0">% <span
+                                            class="float-end text-end">Per</span></label>
+                                    <div class="col-2">
+                                        <input type="text" class="form-control text-end"
+                                            name="detailJasaPenyimpananPeriode" readonly>
+                                    </div>
+                                    <label class="col-1 form-label px-0 end-jasaPenyimpanan">bulan</label>
+                                    <div class="col-6 pe-0">
+                                        <label>Biaya Jasa Penyimpanan / Periode</label>
+                                    </div>
+                                    <div class="col-6 mb-2 ps-0">
+                                        <input type="text" name="detailBiayaJasaPenyimpananPerPeriode"
+                                            class="form-control text-end" readonly>
+                                    </div>
+                                    <div class="col-6 pe-0">
+                                        <label>Total Biaya Jasa Penyimpanan</label>
+                                    </div>
+                                    <div class="col-6 mb-2 ps-0">
+                                        <input type="text" name="detailTotalBiayaJasaPenyimpanan"
+                                            class="form-control text-end" readonly>
+                                    </div>
+                                    <div class="col-6 pe-0">
+                                        <label>Biaya Admin Tutup</label>
+                                    </div>
+                                    <div class="col-6 mb-2 ps-0">
+                                        <input type="text" name="detailBiayaAdminTutup" class="form-control text-end"
+                                            readonly>
+                                    </div>
+                                    <div class="col-6 pe-0">
+                                        <label>Total Pengembalian</label>
+                                    </div>
+                                    <div class="col-6 mb-2 ps-0">
+                                        <input type="text" name="detailTotalPengembalian" class="form-control text-end"
+                                            readonly>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card col-12 mt-3">
+                    <div class="card-body p-4">
+                        <div class="row mb-5 ">
+                            <label class="col-12 mb-3"><b>Data Tagihan Cicilan dan Pembayaran Pelanggan</b></label>
+                        </div>
+                        <small class="text-danger" id="info-daftarBarangGadai"></small>
+                        <table class="table table-striped table-bordered">
+                            <thead>
+                                <tr class="bg-primary text-white">
+                                    <th class="text-center">No Transaksi</th>
+                                    <th class="text-center">Cicilan Ke</th>
+                                    <th class="text-center">Pokok</th>
+                                    <th class="text-center">B. Jasa Penyimpanan</th>
+                                    <th class="text-center">Denda Keterlambatan</th>
+                                    <th class="text-center">Total Tagihan</th>
+                                    <th class="text-center">Status Cicilan</th>
+                                    <th class="text-center">Tanggal Akif Cicilan</th>
+                                    <th class="text-center">Tanggal Bayar</th>
+                                </tr>
+                            </thead>
+                            <tbody id="detailDataCicilan">
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-12 text-end py-4">
+                    <button type="button" class="btn btn-secondary btn-kembali me-3 px-5"
+                        onclick="return btnKembali()">Kembali</button>
+                </div>
+            </div>
+        </div>
+        <div class="row" id="main-form">
+            <div class="col-12">
+                <h2 class="mb-4">Transaksi Cicilan Tetap</h2>
+                <div class="card col-12">
+                    <div class="card-header">
+                        <div class="float-start p-2">
+                            <b>Cari Data Transaksi</b>
+                        </div>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row">
+                            <div class="col-lg-2 mb-2">
+                                <label class="py-2">Kode Produk</label>
+                            </div>
+                            <div class="col-lg-4 mb-2">
+                                <input type="text" name="searchIdProduk" class="form-control">
+                            </div>
+                            <div class="col-lg-2 text-end mb-2">
+                                <label class="py-2">Status Transaksi</label>
+                            </div>
+                            <div class="col-lg-4 mb-2">
+                                <select name="searchStatus" class="form-control">
+                                    <option value=""></option>
+                                    <option value="A">Active</option>
+                                    <option value="N">Nonactive</option>
+                                </select>
+                            </div>
+
+                            <div class="col-lg-2 mb-2">
+                                <label class="py-2">Nama Produk</label>
+                            </div>
+                            <div class="col-lg-4 mb-2">
+                                <input type="text" name="searchNamaProduk" class="form-control">
+                            </div>
+                            <div class="col-lg-2 text-end mb-2">
+                                <label class="py-2">Nomor KTP</label>
+                            </div>
+                            <div class="col-lg-4 mb-2">
+                                <input type="text" name="searchNomorKtp" class="form-control">
+                            </div>
+
+                            <div class="col-lg-2 mb-2">
+                                <label class="py-2">Tanggal Transaksi</label>
+                            </div>
+                            <div class="col-lg-2 mb-2">
+                                <input type="date" name="searchTanggalTransaksi" class="form-control"
+                                th:value="${#calendars.format(#calendars.createNow(), 'yyyy-MM-dd')}">
+                            </div>
+                            <div class="col-lg-4 text-end mb-2">
+                                <label class="py-2">Id Pelanggan</label>
+                            </div>
+                            <div class="col-lg-4 mb-2">
+                                <input type="text" name="searchIdPelanggan" class="form-control">
+                            </div>
+
+                            <div class="col-lg-2 mb-2">
+                                <label class="py-2">s/d</label>
+                            </div>
+                            <div class="col-lg-2 mb-2">
+                                <input type="date" name="searchTanggalTransaksiSampai" class="form-control"
+                                th:value="${#calendars.format(#calendars.createNow(), 'yyyy-MM-dd')}">
+                            </div>
+                            <div class="col-lg-4 text-end mb-2">
+                                <label class="py-2">Nama Pelanggan</label>
+                            </div>
+                            <div class="col-lg-4 mb-2">
+                                <input type="text" name="searchNamaPelanggan" class="form-control">
+                            </div>
+
+                            <div class="col-lg-2 mb-2">
+                                <label class="py-2">nomor Transaksi</label>
+                            </div>
+                            <div class="col-lg-4 mb-2">
+                                <input type="text" name="searchNomorTransaksi" class="form-control">
+                            </div>
+                            <div class="col-lg-4"></div>
+
+                            <div class="ms-auto col-lg-10 pt-2">
+                                <button class="btn btn-primary me-3" onclick="return searchAction()">
+                                    Cari
+                                </button>
+                                <button class="btn btn-primary mx-3" onclick="return emptyAction()">
+                                    Kosongkan
+                                </button>
+                                <button class="btn btn-primary mx-3" onclick="return add()">
+                                    Transaksi Baru
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr />
+                <div class="table-responsive">
+                    <table class="table table-striped w-100" id="data-trans">
+                        <thead>
+                            <tr class="bg-primary text-white">
+                                <th class="text-center">NoTrans</th>
+                                <th class="text-center">TglTrans</th>
+                                <th class="text-center">Id Pelanggan</th>
+                                <th class="text-center">no KTP</th>
+                                <th class="text-center">Nama Pelanggan</th>
+                                <th class="text-center">Produk</th>
+                                <th class="text-center">Tgl Jatuh Tempo</th>
+                                <th class="text-center">Status Transaksi</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript">
+    var url = "doGetAllTransaksi";
+    var dataSearch = "";
+    $('nav').load('/fragments/nav');
+    var dataBarangGadai = [];
+    var maksimalNilaiPinjamanPelanggan = 0;
+    view(url, dataSearch);
+
+    function closeAlert() {
+        $('#alert').addClass('d-none');
+    }
+    function btnKembali() {
+        view(url, dataSearch);
+        $('#add-form').hide();
+        $('#main-form').show();
+        $('#detail-form').hide();
+        window.location.hash = '#';
+        window.location.hash = '#main-form';
+    }
+    function searchActionPelanggan() {
+        var id = $('[name="searchPId"]').val();
+        var namaPelanggan = $('[name="searchPNamaPelanggan"]').val();
+        var nomorHp = $('[name="searchNomorHp"]').val();
+        var nomorKtp = $('[name="searchNomorKtp"]').val();
+
+        var data = { id: id, namaPelanggan: namaPelanggan, nomorHp: nomorHp, nomorKtp: nomorKtp }
+
+        $.ajax({
+            type: "GET",
+            data: data,
+            contentType: 'application/json',
+            dataType: 'json',
+            url: "doSearchPelanggan",
+            success: function (response) {
+                if (response.data.length > 0) {
+                    var text = "";
+                    response.data.forEach(myFunction);
+                    function myFunction(item, index) {
+                        text += '<button type="button" class="dataList btn btn-sm" id="list-' + item.id + '" onclick="return dataListClick(' + item.id + ',' + item.limitPinjaman + ')">{' + item.id + '} - {' + item.nomorKtp + '} - {' + item.nomorHp + '} - {' + item.namaPelanggan + '}</button>';
+                    }
+                    $('#SearchResultP').html(text);
+                }
+            },
+            error: function (xhr, status, error) {
+
+            }
+        })
+    }
+    function dataListClick(id, maksimalNilaiPinjaman) {
+        maksimalNilaiPinjamanPelanggan = maksimalNilaiPinjaman;
+        $('[name="idPelanggan"]').val(id);
+        $('.dataList').removeClass("dataListOn");
+        $('#list-' + id).addClass("dataListOn");
+    }
+    function getDetailProduk() {
+        var id = $('[name="produkTransaksi"]').val();
+        $('[name="namaProdukTransaksi"]').val("");
+        $('[name="keteranganProdukTransaksi"]').val("");
+        if (id) {
+            $.ajax({
+                type: "GET",
+                contentType: 'application/json',
+                dataType: 'json',
+                url: "/produk/doGetDetailProduk/" + id,
+                success: function (response) {
+                    $('[name="namaProdukTransaksi"]').val(response.data.namaProduk);
+                    $('[name="keteranganProdukTransaksi"]').val(response.data.keterangan);
+                },
+                error: function (xhr, status, error) {
+
+                }
+            })
+        }
+    }
+    function viewBarangGadai() {
+        dataBarangGadai.forEach(myFunction);
+        var text = '';
+        if (dataBarangGadai.length == 0) { $('#dataBarangGadai').html(''); }
+        function myFunction(item, index) {
+            text += '<tr>' +
+                '<td>' + item.no + '</td>' +
+                '<td>' + item.namaBarang + '</td>' +
+                '<td>' + item.kondisi + '</td>' +
+                '<td>' + item.jlh + '</td>' +
+                '<td class="text-end">' + number_format(item.hargaPerSatuan) + '</td>' +
+                '<td class="text-end">' + number_format(item.hargaPerSatuan * item.jlh) + '</td>' +
+                '<td class="text-center">' +
+                '<button class="btn btn-primary py-1 px-4" onclick="return removeBarangGadai(' + index + ')">-</button>' +
+                '</td>' +
+                '</tr>';
+            $('#dataBarangGadai').html(text);
+        }
+    }
+    function addBarangGadai() {
+        removeInfoBarang();
+
+        var nama = $('[name="namaBarangGadai"]').val();
+        var deskripsi = $('[name="deskripsiBarangGadai"]').val();
+        var jumlah = $('[name="jumlahBarangGadai"]').val();
+        var harga = $('[name="hargaBarangGadai"]').val();
+
+        if (nama == "") { $('#info-namaBarangGadai').html("* Tidak Boleh Kosong"); }
+        if (deskripsi == "") { $('#info-deskripsiBarangGadai').html("* Tidak Boleh Kosong"); }
+        if (jumlah == "" || jumlah == 0) { $('#info-jumlahBarangGadai').html("* Tidak Boleh Kosong"); }
+        if (harga == "" || harga == 0) { $('#info-hargaBarangGadai').html("* Tidak Boleh Kosong"); }
+
+        if (nama == "" || deskripsi == "" || jumlah == "" || jumlah == 0 || harga == "" || harga == 0) { retun; }
+
+        if (harga.match(/^.*\..*$/)) {
+            harga = harga.replaceAll('.', '');
+        }
+        if (harga.match(/^.*\,.*$/)) {
+            harga = harga.replaceAll(',', '.');
+        }
+
+        var noUrut = dataBarangGadai.length + 1;
+
+        dataBarangGadai.push({ "no": noUrut, "namaBarang": nama, "kondisi": deskripsi, "jlh": jumlah, "hargaPerSatuan": harga });
+        viewBarangGadai();
+        clearFormBarang();
+    }
+    function removeBarangGadai(value) {
+        dataBarangGadai.splice(value, 1);
+        for (var i in dataBarangGadai) {
+            dataBarangGadai[i].no = parseInt(i) + 1;
+        }
+        viewBarangGadai()
+    }
+    function hitung() {
+        var idprodukTransaksi = $('[name="produkTransaksi"]').val();
+        var nilaiPencairanPelanggan = $('[name="nilaiPencairanPelanggan"]').val();
+        var diskonAdmBuka = $('[name="diskonAdmBuka"]').val();
+        var totalNilaiTaksiran = 0;
+
+        if (nilaiPencairanPelanggan.match(/^.*\..*$/)) {
+            nilaiPencairanPelanggan = nilaiPencairanPelanggan.replaceAll('.', '');
+        }
+        if (nilaiPencairanPelanggan.match(/^.*\,.*$/)) {
+            nilaiPencairanPelanggan = nilaiPencairanPelanggan.replaceAll(',', '.');
+        }
+        if (diskonAdmBuka.match(/^.*\,.*$/)) {
+            diskonAdmBuka = diskonAdmBuka.replaceAll(',', '.');
+        }
+        for (var i in dataBarangGadai) {
+            totalNilaiTaksiran += dataBarangGadai[i].hargaPerSatuan * dataBarangGadai[i].jlh;
+        }
+
+        removeInfo();
+
+        if (idprodukTransaksi == "") { $('#info-produkTransaksi').html("* Tidak Boleh Kosong"); }
+        if (nilaiPencairanPelanggan == "") { $('#info-nilaiPencairanPelanggan').html("* Tidak Boleh Kosong"); }
+        if (diskonAdmBuka == "") { $('#info-diskonAdmBuka').html("* Tidak Boleh Kosong"); }
+        if (totalNilaiTaksiran == 0) { $('#info-daftarBarangGadai').html("* Tidak Boleh Kosong"); }
+
+        if (idprodukTransaksi == "" || nilaiPencairanPelanggan == "" || diskonAdmBuka == "" || totalNilaiTaksiran == 0) { return; }
+
+        var data = { idprodukTransaksi: idprodukTransaksi, nilaiPencairanPelanggan: nilaiPencairanPelanggan, diskonAdmBuka: diskonAdmBuka, totalNilaiTaksiran: totalNilaiTaksiran };
+        if (idprodukTransaksi) {
+            $.ajax({
+                type: "GET",
+                contentType: 'application/json',
+                data: data,
+                dataType: 'json',
+                url: "doHitung/",
+                success: function (response) {
+                    var obj = response.data;
+                    $('[name="totalNilaiTaksiran"]').val(totalNilaiTaksiran.toLocaleString("pt-BR", { maximumFractionDigits: 2 }));
+                    $('[name="ltv"]').val(obj.ltv);
+                    $('[name="maksimalNilaiPinjaman"]').val(obj.maksimalNilaiPinjaman.toLocaleString("pt-BR", { maximumFractionDigits: 2 }));
+                    $('[name="biayaAdminBuka"]').val(obj.adminBuka.toLocaleString("pt-BR"));
+                    $('[name="biayaAdminBukaAkhir"]').val(obj.adminBukaAkhir.toLocaleString("pt-BR", { maximumFractionDigits: 2 }));
+                    $('[name="biayaAdminTutup"]').val(obj.adminTutup.toLocaleString("pt-BR"));
+                    $('[name="totalNilaiPinjaman"]').val(obj.totalNilaiPinjaman.toLocaleString("pt-BR", { maximumFractionDigits: 2 }));
+                    $('[name="tanggalTransaksi"]').val(obj.tglTransaksi);
+                    $('[name="tglJatuhTempo"]').val(obj.tanggalJatuhTempo);
+                    $('[name="jasaPenyimpanan"]').val(obj.jasaPenyimpanan.toLocaleString("pt-BR", { maximumFractionDigits: 2 }));
+                    $('[name="jasaPenyimpananPeriode"]').val(obj.jasaPenyimpananPeriode);
+                    $('[name="biayaJasaPenyimpananPerPeriode"]').val(obj.biayaJasaPenyimpananPerPeriode.toLocaleString("pt-BR", { maximumFractionDigits: 2 }));
+                    $('[name="totalBiayaJasaPenyimpanan"]').val(obj.totalBiayaJasaPenyimpanan.toLocaleString("pt-BR", { maximumFractionDigits: 2 }));
+                    $('[name="totalPengembalian"]').val(obj.totalPengembalian.toLocaleString("pt-BR", { maximumFractionDigits: 2 }));
+
+                    if (nilaiPencairanPelanggan > obj.maksimalNilaiPinjaman) { $('#info-nilaiPencairanPelanggan').html("* Tidak Boleh Lebih dari Maksimal Nilai Pinjaman"); return; }
+                    if (nilaiPencairanPelanggan > maksimalNilaiPinjamanPelanggan) { $('#info-nilaiPencairanPelanggan').html("* Tidak Boleh Lebih dari Limit Pinjaman {" + number_format(maksimalNilaiPinjamanPelanggan) + "}"); return; }
+                },
+                error: function (xhr, status, error) {
+                    var obj = JSON.parse(xhr.responseText);
+                    alertInfo(obj);
+                }
+            })
+        }
+    }
+    function clearFormBarang() {
+        $('[name="namaBarangGadai"]').val("");
+        $('[name="deskripsiBarangGadai"]').val("");
+        $('[name="jumlahBarangGadai"]').val("");
+        $('[name="hargaBarangGadai"]').val("");
+    }
+    function clearForm() {
+        clearFormBarang();
+        $('[name="searchPId"]').val("");
+        $('[name="searchPNamaPelanggan"]').val("");
+        $('[name="searchPNomorKtp"]').val("");
+        $('[name="searchPNomorHp"]').val("");
+        $('#SearchResultP').html("");
+        $('[name="idPelanggan"]').val("");
+        $('[name="nomorTransaksi"]').val("");
+        $('[name="produkTransaksi"]').val("");
+        $('[name="namaProdukTransaksi"]').val("");
+        $('[name="keteranganProdukTransaksi"]').val("");
+        $('[name="totalNilaiTaksiran"]').val("");
+        $('[name="ltv"]').val("");
+        $('[name="maksimalNilaiPinjaman"]').val("");
+        $('[name="nilaiPencairanPelanggan"]').val("");
+        $('[name="biayaAdminBuka"]').val("");
+        $('[name="diskonAdmBuka"]').val("");
+        $('[name="biayaAdminBukaAkhir"]').val("");
+        $('[name="totalNilaiPinjaman"]').val("");
+        $('[name="tanggalTransaksi"]').val("");
+        $('[name="tglJatuhTempo"]').val("");
+        $('[name="jasaPenyimpanan"]').val("");
+        $('[name="jasaPenyimpananPeriode"]').val("");
+        $('[name="biayaJasaPenyimpananPerPeriode"]').val("");
+        $('[name="totalBiayaJasaPenyimpanan"]').val("");
+        $('[name="biayaAdminTutup"]').val("");
+        $('[name="totalPengembalian"]').val("");
+    }
+    function removeInfoBarang() {
+        $('#info-namaBarangGadai').html('');
+        $('#info-deskripsiBarangGadai').html('');
+        $('#info-jumlahBarangGadai').html('');
+        $('#info-hargaBarangGadai').html('');
+    }
+    function removeInfo() {
+        $('#info-idPelanggan').html('');
+        $('#info-produkTransaksi').html('');
+        $('#info-daftarBarangGadai').html('');
+        $('#info-nilaiPencairanPelanggan').html('');
+        $('#info-diskonAdmBuka').html('');
+    }
+    function alertInfo(obj) {
+        if (obj.custId) { $('#info-idPelanggan').html("* " + obj.custId); }
+        if (obj.productId) { $('#info-produkTransaksi').html("* " + obj.productId); }
+        if (obj.totalNilaiTaksiran) { $('#info-daftarBarangGadai').html("* " + obj.totalNilaiTaksiran); }
+        if (obj.nilaiPencairanPelanggan) { $('#info-nilaiPencairanPelanggan').html("* " + obj.nilaiPencairanPelanggan); }
+        if (obj.diskonAdmBuka) { $('#info-diskonAdmBuka').html("* " + obj.diskonAdmBuka); }
+    }
+    function searchAction() {
+        var ProductId = $('[name="searchIdProduk"]').val();
+        var ProdukName = $('[name="searchNamaProduk"]').val();
+        var Status = $('[name="searchStatus"]').val();
+        var TrxDateBegin = $('[name="searchTanggalTransaksi"]').val();
+        var TrxDateEnd = $('[name="searchTanggalTransaksiSampai"]').val();
+        var Id = $('[name="searchNomorTransaksi"]').val();
+        var NomorKtp = $('[name="searchNomorKtp"]').val();
+        var CustId = $('[name="searchIdPelanggan"]').val();
+        var NamaPelanggan = $('[name="searchNamaPelanggan"]').val();
+
+        ProductId = { "name": "ProductId", "value": ProductId };
+        ProdukName = { "name": "ProdukName", "value": ProdukName };
+        Status = { "name": "Status", "value": Status };
+        TrxDateBegin = { "name": "TrxDateBegin", "value": TrxDateBegin };
+        TrxDateEnd = { "name": "TrxDateEnd", "value": TrxDateEnd };
+        Id = { "name": "Id", "value": Id };
+        NomorKtp = { "name": "NomorKtp", "value": NomorKtp };
+        CustId = { "name": "CustId", "value": CustId };
+        NamaPelanggan = { "name": "NamaPelanggan", "value": NamaPelanggan };
+
+        dataSearch = [ProductId, ProdukName, Status, TrxDateBegin, TrxDateEnd, Id, NomorKtp, CustId, NamaPelanggan]
+        url = "doSearchTransaksi";
+        view(url, dataSearch);
+    }
+    function emptyAction() {
+        todayDate = new Date().toISOString().slice(0, 10);
+        $('[name="searchIdProduk"]').val("");
+        $('[name="searchNamaProduk"]').val("");
+        $('[name="searchTanggalTransaksi"]').val(todayDate);
+        $('[name="searchTanggalTransaksiSampai"]').val(todayDate);
+        $('[name="searchNomorTransaksi"]').val("");
+        $('[name="searchStatus"]').val("");
+        $('[name="searchNomorKtp"]').val("");
+        $('[name="searchIdPelanggan"]').val("");
+        $('[name="searchNamaPelanggan"]').val("");
+    }
+    
+    function view(url, data) {
+        var table = $('#data-trans').DataTable({
+            "bPaginate": true,
+            "bLengthChange": false,
+            "bFilter": false,
+            "bInfo": true,
+            "bAutoWidth": true,
+            "sAjaxSource": url,
+            "sAjaxDataProp": "data",
+            "fnServerParams": function (aoData) {
+                if (data) { aoData.push(data[0], data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8]); }
+            },
+            "aoColumns": [
+                { "mData": "id" },
+                {
+                    "mData": "tanggalTransaksi",
+                    className: 'text-center',
+                    render: function (data) {
+                        const date = new Date(data);
+                        return date.toLocaleDateString('en-GB', {
+                            day: 'numeric', month: 'short', year: 'numeric'
+                        }).replace(/ /g, ' ');
+                    }
+
+                },
+                {
+                    "mData": "custId",
+                    className: 'text-center'
+                },
+                {
+                    "mData": "nomorKtp",
+                    className: 'text-center'
+                },
+                { "mData": "custName" },
+                { "mData": "produkName" },
+                {
+                    "mData": "tanggalJatuhTempo",
+                    className: 'text-center',
+                    render: function (data) {
+                        const date = new Date(data);
+                        return date.toLocaleDateString('en-GB', {
+                            day: 'numeric', month: 'short', year: 'numeric'
+                        }).replace(/ /g, ' ');
+                    }
+                },
+                {
+                    "mData": "status",
+                    className: 'text-center',
+                    render: function (data) {
+                        if (data == "A") { data = "Aktif"; }
+                        if (data == "E") { data = "Lunas"; }
+                        return data;
+                    }
+                },
+                {
+                    "mData": "id",
+                    className: 'text-center',
+                    render: function (data) {
+                        data = '<button onclick="return detail(' + data + ')" class="btn btn-sm btn-primary">DETAIL</button>';
+                        return data;
+                    }
+                }
+            ],
+            dom: '<bottom><"#ip" <"#info">p>',
+            language: {
+                paginate: {
+                    next: '<i class="fa-solid fa-angle-right"></i>',
+                    previous: '<i class="fa-solid fa-angle-left"></i>'
+                }
+            },
+            stateSave: true,
+            "bDestroy": true
+        });
+        setTimeout(function () {
+            var info = table.page.info();
+            $('#info').html('Halaman <span id="halaman">' + (info.page + 1) + '</span> dari ' + info.pages);
+        }, 500);
+
+    }
+    
+    function add() {
+        clearForm();
+        removeInfo();
+        removeInfoBarang();
+
+        dataBarangGadai.splice(0, dataBarangGadai.length);
+        viewBarangGadai();
+
+        $('#alert').addClass('d-none');
+
+        $('#add-form').show();
+        $('#main-form').hide();
+        $('#detail-form').hide();
+
+        $('#simpan').attr('onclick', 'return addAction()');
+        $('#simpan').html('Simpan');
+
+        window.location.hash = '#';
+        window.location.hash = '#add-form';
+    }
+    function addAction() {
+        hitung();
+
+        var productId = $('[name="produkTransaksi"]').val();
+        var totalNilaiTaksiran = $('[name="totalNilaiTaksiran"]').val();
+        var nilaiPencairanPelanggan = $('[name="nilaiPencairanPelanggan"]').val();
+        var diskonAdmBuka = $('[name="diskonAdmBuka"]').val();
+        var custId = $('[name="idPelanggan"]').val();
+        var maksimalNilaiPinjaman = $('[name="maksimalNilaiPinjaman"]').val();
+
+        if (totalNilaiTaksiran.match(/^.*\..*$/)) {
+            totalNilaiTaksiran = totalNilaiTaksiran.replaceAll('.', '');
+        }
+        if (totalNilaiTaksiran.match(/^.*\,.*$/)) {
+            totalNilaiTaksiran = totalNilaiTaksiran.replaceAll(',', '.');
+        }
+
+        if (nilaiPencairanPelanggan.match(/^.*\..*$/)) {
+            nilaiPencairanPelanggan = nilaiPencairanPelanggan.replaceAll('.', '');
+        }
+        if (nilaiPencairanPelanggan.match(/^.*\,.*$/)) {
+            nilaiPencairanPelanggan = nilaiPencairanPelanggan.replaceAll(',', '.');
+        }
+
+        if (diskonAdmBuka.match(/^.*\,.*$/)) {
+            diskonAdmBuka = diskonAdmBuka.replaceAll(',', '.');
+        }
+
+        if (maksimalNilaiPinjaman.match(/^.*\..*$/)) {
+            maksimalNilaiPinjaman = maksimalNilaiPinjaman.replaceAll('.', '');
+        }
+        if (maksimalNilaiPinjaman.match(/^.*\,.*$/)) {
+            maksimalNilaiPinjaman = maksimalNilaiPinjaman.replaceAll(',', '.');
+        }
+
+        if (nilaiPencairanPelanggan > maksimalNilaiPinjaman) { $('#info-nilaiPencairanPelanggan').html("* Tidak Boleh Lebih dari Maksimal Nilai Pinjaman"); return; }
+        if (nilaiPencairanPelanggan > maksimalNilaiPinjamanPelanggan) { $('#info-nilaiPencairanPelanggan').html("* Tidak Boleh Lebih dari Limit Pinjaman {" + number_format(maksimalNilaiPinjamanPelanggan) + "}"); return; }
+
+        var data = {
+            productId: productId, totalNilaiTaksiran: totalNilaiTaksiran, nilaiPencairanPelanggan: nilaiPencairanPelanggan,
+            diskonAdmBuka: diskonAdmBuka, custId: custId, dataBarangGadai: dataBarangGadai
+        }
+
+        $.ajax({
+            type: "POST",
+            data: JSON.stringify(data),
+            contentType: 'application/json',
+            dataType: 'json',
+            url: "doInsert",
+            success: function (response) {
+                $('[name="nomorTransaksi"]').val(response.data.id);
+                $('#alert').removeClass('d-none');
+                $('#alert').removeClass('alert-danger');
+                $('#alert').removeClass('alert-primary');
+                $('#alert').addClass('show alert-success');
+                $('#message').html(response.msg);
+                $('#simpan').attr('onclick', 'return add()');
+                $('#simpan').html('Buat Baru');
+
+                window.location.hash = '#';
+                window.location.hash = '#add-form';
+            },
+            error: function (xhr, status, error) {
+                var obj = JSON.parse(xhr.responseText);
+                alertInfo(obj);
+            }
+        })
+    }
+    function detail(id) {
+
+        $('#add-form').hide();
+        $('#main-form').hide();
+        $('#detail-form').show();
+
+        window.location.hash = '#';
+        window.location.hash = '#detail-form';
+
+        var jasaPenyimpanan = 0;
+        var idTransaksi = "";
+
+        $.ajax({
+            type: "GET",
+            contentType: 'application/json',
+            dataType: 'json',
+            url: "doGetDetailTransaksi/" + id,
+            success: function (response) {
+                var maksimalNilaiPinjaman = response.data.totalNilaiTaksiran * response.data.ltv / 100;
+                var biayaAdminBukaAkhir = response.data.adminBuka - (response.data.adminBuka * response.data.diskonAdmBuka / 100);
+                var totalNilaiPinjaman = response.data.nilaiPencairanPelanggan + biayaAdminBukaAkhir;
+                var biayaJasaPenyimpananPerPeriode = (response.data.jasaPenyimpanan / 100 * totalNilaiPinjaman) / (response.data.jangkaWaktu / response.data.jasaPenyimpananPeriode);
+                var totalBiayaJasaPenyimpanan = (response.data.jangkaWaktu / response.data.jasaPenyimpananPeriode) * biayaJasaPenyimpananPerPeriode;
+                var totalPengembalian = totalNilaiPinjaman + totalBiayaJasaPenyimpanan + response.data.adminTutup;
+
+                jasaPenyimpanan = response.data.jasaPenyimpanan;
+                idTransaksi = response.data.id;
+
+                $('[name="detailIdPelanggan"]').val(response.data.custId);
+                $('[name="detailTglTransaksi"]').val(response.data.tanggalTransaksi);
+                $('[name="detailNomorTransaksi"]').val(response.data.id);
+                $('[name="detailProdukTransaksi"]').val(response.data.productId);
+                $('[name="detailNamaProdukTransaksi"]').val(response.data.produkName);
+                $('[name="detailKeteranganProdukTransaksi"]').val(response.data.keterangan);
+                $('[name="detailTotalNilaiTaksiran"]').val(number_format(response.data.totalNilaiTaksiran.replace('.', ',')));
+                $('[name="detailLtv"]').val(response.data.ltv.toLocaleString("pt-BR", { maximumFractionDigits: 2 }));
+                $('[name="detailMaksimalNilaiPinjaman"]').val(maksimalNilaiPinjaman.toLocaleString("pt-BR", { maximumFractionDigits: 2 }));
+                $('[name="detailNilaiPencairanPelanggan"]').val(response.data.nilaiPencairanPelanggan.toLocaleString("pt-BR", { maximumFractionDigits: 2 }));
+                $('[name="detailBiayaAdminBuka"]').val(response.data.adminBuka.toLocaleString("pt-BR", { maximumFractionDigits: 2 }));
+                $('[name="detailDiskonAdmBuka"]').val(response.data.diskonAdmBuka.toLocaleString("pt-BR", { maximumFractionDigits: 2 }));
+                $('[name="detailBiayaAdminBukaAkhir"]').val(biayaAdminBukaAkhir.toLocaleString("pt-BR", { maximumFractionDigits: 2 }));
+                $('[name="detailTotalNilaiPinjaman"]').val(totalNilaiPinjaman.toLocaleString("pt-BR", { maximumFractionDigits: 2 }));
+                $('[name="detailTanggalTransaksi"]').val(response.data.tanggalTransaksi);
+                $('[name="detailTglJatuhTempo"]').val(response.data.tanggalJatuhTempo);
+                $('[name="detailJasaPenyimpanan"]').val(response.data.jasaPenyimpanan.toLocaleString("pt-BR", { maximumFractionDigits: 2 }));
+                $('[name="detailJasaPenyimpananPeriode"]').val(response.data.jasaPenyimpananPeriode);
+                $('[name="detailBiayaJasaPenyimpananPerPeriode"]').val(biayaJasaPenyimpananPerPeriode.toLocaleString("pt-BR", { maximumFractionDigits: 2 }));
+                $('[name="detailTotalBiayaJasaPenyimpanan"]').val(totalBiayaJasaPenyimpanan.toLocaleString("pt-BR", { maximumFractionDigits: 2 }));
+                $('[name="detailBiayaAdminTutup"]').val(response.data.adminTutup.toLocaleString("pt-BR", { maximumFractionDigits: 2 }));
+                $('[name="detailTotalPengembalian"]').val(totalPengembalian.toLocaleString("pt-BR", { maximumFractionDigits: 2 }));
+            },
+            error: function (xhr, status, error) {
+
+            }
+        })
+
+        $.ajax({
+            type: "GET",
+            contentType: 'application/json',
+            dataType: 'json',
+            url: "doGetBarangTransaksi/" + id,
+            success: function (response) {
+                var html = '';
+                for (i = 0; i < response.data.length; i++) {
+                    html += '<tr>'
+                        + '<td class="text-center">' + (i + 1) + '</td>'
+                        + '<td>' + response.data[i].namaBarang + '</td>'
+                        + '<td>' + response.data[i].kondisi + '</td>'
+                        + '<td class="text-center">' + response.data[i].jlh + '</td>'
+                        + '<td class="text-end">' + response.data[i].hargaPerSatuan.toLocaleString("pt-BR", { maximumFractionDigits: 2 }) + '</td>'
+                        + '<td class="text-end">' + (response.data[i].jlh * response.data[i].hargaPerSatuan).toLocaleString("pt-BR", { maximumFractionDigits: 2 }) + '</td>'
+                        + '</tr>';
+                }
+                $('#detailDataBarangGadai').html(html);
+            },
+            error: function (xhr, status, error) {
+
+            }
+        })
+
+        $.ajax({
+            type: "GET",
+            contentType: 'application/json',
+            dataType: 'json',
+            url: "doGetCicilanTransaksi/" + id,
+            success: function (response) {
+                var html = '';
+                for (i = 0; i < response.data.length; i++) {
+                    var denda = 0;
+                    if (response.data[i].denda) { denda = response.data[i].denda; }
+                    var totalTagihan = denda + (response.data[i].pokok * jasaPenyimpanan / 100) + response.data[i].pokok;
+                    var tanggalBayar = "";
+                    if (response.data[i].tanggalBayar != null) {
+                        const date = new Date(response.data[i].tanggalBayar);
+                        const tanggalBayar = date.toLocaleDateString('en-GB', {
+                            day: 'numeric', month: 'short', year: 'numeric'
+                        }).replace(/ /g, ' ');
+                    }
+                    const date = new Date(response.data[i].tanggalAktif);
+                    const tanggalAktif = date.toLocaleDateString('en-GB', {
+                        day: 'numeric', month: 'short', year: 'numeric'
+                    }).replace(/ /g, ' ');
+
+                    html += '<tr>'
+                        + '<td class="text-center">' + idTransaksi + '</td>'
+                        + '<td class="text-center">' + (i+1) + '</td>'
+                        + '<td class="text-center">' + response.data[i].pokok.toLocaleString("pt-BR", { maximumFractionDigits: 2 }) + '</td>'
+                        + '<td class="text-end">' + (response.data[i].pokok * jasaPenyimpanan / 100).toLocaleString("pt-BR", { maximumFractionDigits: 2 }) + '</td>'
+                        + '<td class="text-end">' + denda.toLocaleString("pt-BR", { maximumFractionDigits: 2 }) + '</td>'
+                        + '<td class="text-end">' + totalTagihan.toLocaleString("pt-BR", { maximumFractionDigits: 2 }) + '</td>'
+                        + '<td>' + response.data[i].status + '</td>'
+                        + '<td class="text-end">' + tanggalAktif + '</td>'
+                        + '<td class="text-end">' + tanggalBayar + '</td>'
+                        + '</tr>';
+                }
+                $('#detailDataCicilan').html(html);
+            },
+            error: function (xhr, status, error) {
+
+            }
+        })
+    }
+
+    (function ($) {
+        $.fn.inputFilter = function (callback, errMsg) {
+            return this.on("input keydown keyup mousedown mouseup select contextmenu drop focusout", function (e) {
+                if (callback(this.value)) {
+                    // Accepted value
+                    if (["keydown", "mousedown", "focusout"].indexOf(e.type) >= 0) {
+                        $(this).removeClass("input-error");
+                        this.setCustomValidity("");
+                    }
+                    this.oldValue = this.value;
+                    this.oldSelectionStart = this.selectionStart;
+                    this.oldSelectionEnd = this.selectionEnd;
+                } else if (this.hasOwnProperty("oldValue")) {
+                    // Rejected value - restore the previous one
+                    $(this).addClass("input-error");
+                    this.setCustomValidity(errMsg);
+                    this.reportValidity();
+                    this.value = this.oldValue;
+                    this.setSelectionRange(this.oldSelectionStart, this.oldSelectionEnd);
+                } else {
+                    // Rejected value - nothing to restore
+                    this.value = "";
+                }
+            });
+        };
+    }(jQuery));
+    $(document).ready(function () {
+        $('[name="jumlahBarangGadai"]').inputFilter(function (value) {
+            return /^\d*$/.test(value);
+        }, "Only number allowed");
+        $('[name="hargaBarangGadai"]').inputFilter(function (value) {
+            return /^(\d|\,|\.)*$/.test(value);
+        }, "Only number allowed");
+        $('[name="nilaiPencairanPelanggan"]').inputFilter(function (value) {
+            return /^(\d|\,|\.)*$/.test(value);
+        }, "Only number allowed");
+        $('[name="diskonAdmBuka"]').inputFilter(function (value) {
+            return /^(\d|\,)*$/.test(value);
+        }, "Only number allowed");
+
+        $(document).on("click", ".paginate_button", function () {
+            var pageclick = $('.paginate_button.current').html();
+            $('#halaman').html(pageclick);
+        });
+    });
+
+    function number_format(num) {
+        return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+    }
+    function formatDate(date) {
+        var d = new Date(date),
+            month = '' + (d.getMonth() + 1),
+            day = '' + d.getDate(),
+            year = d.getFullYear();
+
+        if (month.length < 2)
+            month = '0' + month;
+        if (day.length < 2)
+            day = '0' + day;
+
+        return [day, month, year].join('-');
+    }
+    function formatHargaBarangGadai() {
+        var value = $('[name="hargaBarangGadai"]').val();
+        if (value.match(/^.*\..*$/)) {
+            value = value.replaceAll('.', '');
+        }
+        if (value.match(/^.*\,.*$/)) {
+            end = value.substr(value.indexOf(','), 3);
+            value = value.substr(0, value.indexOf(','));
+            value = value + end;
+        } else if (value.length > 10) {
+            value = value.substr(0, 10) + "," + value.substr(10, value.length);
+        }
+        $('[name="hargaBarangGadai"]').val(number_format(value));
+    }
+    function FormatNilaiPencairanPelanggan() {
+        var value = $('[name="nilaiPencairanPelanggan"]').val();
+        if (value.match(/^.*\..*$/)) {
+            value = value.replaceAll('.', '');
+        }
+        if (value.match(/^.*\,.*$/)) {
+            end = value.substr(value.indexOf(','), 3);
+            value = value.substr(0, value.indexOf(','));
+            value = value + end;
+        }
+        $('[name="nilaiPencairanPelanggan"]').val(number_format(value));
+    }
+    function FormatDiskonAdmBuka() {
+        var value = $('[name="diskonAdmBuka"]').val();
+        if (value.match(/^.*\,.*$/)) {
+            end = value.substr(value.indexOf(','), 3);
+            value = value.substr(0, value.indexOf(','));
+            value = value + end;
+        } else if (value.length > 3) {
+            value = value.substr(0, 3) + "," + value.substr(3, value.length);
+        }
+        $('[name="diskonAdmBuka"]').val(value);
+    }
+</script>
+
+</html>
